@@ -78,6 +78,14 @@ class Datasource(BaseSupersetView):
         )
         orm_datasource.database_id = database_id
 
+         is_gamma = False
+        for role in g.user.roles:
+            if str(role) == 'Gamma':
+                is_gamma = True
+        if is_gamma and datasource_dict.get("sql") is not None and len(datasource_dict.get("sql")) > 0:
+            if datasource_dict.get("sql") != orm_datasource.sql:
+                return json_error_response(_("Custom SQL is not allowed for your user."), status=500) # false response type
+
         if "owners" in datasource_dict and orm_datasource.owner_class is not None:
             # Check ownership
             if app.config["OLD_API_CHECK_DATASET_OWNERSHIP"]:

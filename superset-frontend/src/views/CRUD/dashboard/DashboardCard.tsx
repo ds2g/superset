@@ -140,7 +140,7 @@ function DashboardCard({
     <CardStyles
       onClick={() => {
         if (!bulkSelectEnabled) {
-          history.push(dashboard.url);
+            window.open(dashboard.url, '_blank');
         }
       }}
     >

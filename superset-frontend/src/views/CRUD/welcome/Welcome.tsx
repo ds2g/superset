@@ -113,6 +113,8 @@ const WelcomeContainer = styled.div`
   }
 `;
 
+
+// TODO margin top and height
 const WelcomeNav = styled.div`
   height: 50px;
   background-color: white;
@@ -241,9 +243,6 @@ function Welcome({ user, addDangerToast }: WelcomeProps) {
   };
 
   useEffect(() => {
-    if (!collapseState && queryData?.length) {
-      setActiveState(activeState => [...activeState, '4']);
-    }
     setActivityData(activityData => ({
       ...activityData,
       Created: [
@@ -312,18 +311,6 @@ function Welcome({ user, addDangerToast }: WelcomeProps) {
               user={user}
               mine={chartData}
               examples={activityData?.Examples}
-            />
-          )}
-        </Collapse.Panel>
-        <Collapse.Panel header={t('Saved queries')} key="4">
-          {!queryData ? (
-            <LoadingCards cover={checked} />
-          ) : (
-            <SavedQueries
-              showThumbnails={checked}
-              user={user}
-              mine={queryData}
-              featureFlag={isFeatureEnabled(FeatureFlag.THUMBNAILS)}
             />
           )}
         </Collapse.Panel>

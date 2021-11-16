@@ -101,8 +101,8 @@ const createFetchDatasets = async (
   });
 
   const datasets = json?.result?.map(
-    ({ table_name: tableName, id }: { table_name: string; id: number }) => ({
-      label: tableName,
+    ({ table_name: tableName, custom_label: customLabel, id }: { table_name: string; custom_label?: string; id: number }) => ({
+      label: customLabel || tableName,
       value: id,
     }),
   );

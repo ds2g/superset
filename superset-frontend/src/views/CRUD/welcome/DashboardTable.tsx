@@ -211,7 +211,7 @@ function DashboardTable({
             ),
             buttonStyle: 'tertiary',
             onClick: () => {
-              window.location.assign('/dashboard/new');
+              window.open('/dashboard/new', '_blank');
             },
           },
           {
@@ -224,7 +224,7 @@ function DashboardTable({
                       'Yes',
                     )},value:!t))`
                   : '/dashboard/list/';
-              history.push(target);
+                window.open(target, '_blank');
             },
           },
         ]}

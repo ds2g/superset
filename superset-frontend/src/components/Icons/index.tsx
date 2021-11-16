@@ -120,6 +120,7 @@ const IconFileNames = [
   'nav_explore',
   'nav_home',
   'nav_lab',
+  'north',
   'note',
   'offline',
   'paperclip',

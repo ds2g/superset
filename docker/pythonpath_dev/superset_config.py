@@ -28,6 +28,19 @@ from typing import Optional
 from cachelib.file import FileSystemCache
 from celery.schedules import crontab
 
+
+from custom_sso_security_manager import CustomSsoSecurityManager
+CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
+import ownauth_config as config
+
+from flask_appbuilder.security.manager import (
+    AUTH_DB,
+    AUTH_LDAP,
+    AUTH_OAUTH,
+    AUTH_OID,
+    AUTH_REMOTE_USER
+)
+
 logger = logging.getLogger()
 
 
@@ -91,7 +104,10 @@ class CeleryConfig(object):
 
 CELERY_CONFIG = CeleryConfig
 
-FEATURE_FLAGS = {"ALERT_REPORTS": True}
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True,
+    'ENABLE_ROW_LEVEL_SECURITY': True,
+}
 ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
 WEBDRIVER_BASEURL = "http://superset:8088/"
 # The base URL for the email report hyperlinks.
@@ -99,6 +115,47 @@ WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 
 SQLLAB_CTAS_NO_LIMIT = True
 
+AUTH_TYPE = AUTH_OAUTH
+OAUTH_PROVIDERS = [
+    {   'name':'auth0',
+        'token_key':'access_token', # Name of the token in the response of access_token_url
+        'icon':'fa-address-card',   # Icon for the provider
+        'remote_app': {
+            'client_id':'5pMxtEdbs0hUHufMBm2QyLcJCBfT86z3',  # Client Id (Identify Superset application)
+            'client_secret':'jUi8_Fr2xvHalPV1giEXBiuTJX6GuUqpDLaQxlSel66wNyXxihABFQ3w27FcIHkk', # Secret for this Client Id (Identify Superset application)
+            'client_kwargs':{
+                'scope': 'openid profile email',        # Scope for the Authorization
+            },
+            'access_token_method':'POST',    # HTTP Method to call access_token_url
+            'base_url':'https://dev-x4orscvo.eu.auth0.com',
+            'access_token_url':'https://dev-x4orscvo.eu.auth0.com/oauth/token',
+            'authorize_url':'https://dev-x4orscvo.eu.auth0.com/authorize'
+        },
+
+        }, {   
+        'name':'ownauth',
+        'token_key':'access_token', # Name of the token in the response of access_token_url
+        'icon':'fa-google',   # Icon for the provider
+        'remote_app': {
+            'client_id': config.client_id,  # Client Id (Identify Superset application)
+            'client_secret': config.client_secret, # Secret for this Client Id (Identify Superset application)
+            'client_kwargs':{
+                'scope': 'openid profile email',        # Scope for the Authorization
+                                                                                                },
+            'access_token_method':'POST',    # HTTP Method to call access_token_url
+            'base_url':'http://test.zenpa.at',
+            'access_token_url':'http://test.zenpa.at/api/oauth2/token',
+            'authorize_url':'http://test.zenpa.at/api/oauth2/authorize',
+            'logout_redirect_uri': 'http://test.zenpa.at/api/logout'
+        },
+    }
+]
+
+# Will allow user self registration, allowing to create Flask users from Authorized User
+AUTH_USER_REGISTRATION = False
+
+# The default user self registration role
+AUTH_USER_REGISTRATION_ROLE = "Public"
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden

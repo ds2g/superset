@@ -173,7 +173,7 @@ function ExploreViewContainer(props) {
   const windowSize = useWindowSize();
 
   const [showingModal, setShowingModal] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const theme = useTheme();
   const width = `${windowSize.width}px`;

@@ -88,26 +88,50 @@ export function useListViewResource<D extends object = any>(
 
   useEffect(() => {
     if (!infoEnable) return;
-    SupersetClient.get({
-      endpoint: `/api/v1/${resource}/_info?q=${rison.encode({
-        keys: ['permissions'],
-      })}`,
-    }).then(
-      ({ json: infoJson = {} }) => {
-        updateState({
-          permissions: infoJson.permissions,
+    let isMounted = true;
+    async function fetchResourceData() {
+      try {
+        const resource_response = await SupersetClient.get({
+          endpoint: `/api/v1/${resource}/_info?q=${rison.encode({
+            keys: ['permissions'],
+          })}`,
         });
-      },
-      createErrorHandler(errMsg =>
-        handleErrorMsg(
-          t(
-            'An error occurred while fetching %s info: %s',
-            resourceLabel,
-            errMsg,
+        let infoJson  = resource_response.json || {};
+        let permissions = infoJson.permissions || [];
+  
+        if (resource === 'dataset') {
+          const database_response = await SupersetClient.get({
+            endpoint: `/api/v1/database/_info?q=${rison.encode({
+              keys: ['permissions'],
+            })}`,
+          });
+          console.log(database_response);
+          infoJson = database_response.json || {};
+          permissions = permissions.concat((infoJson.permissions || []).map((p: String) => {
+            return `${p}_db`;
+          }));
+        }
+  
+        if (isMounted) {
+          updateState({
+            permissions,
+          });
+        }
+      } catch (e) {
+        createErrorHandler(errMsg =>
+          handleErrorMsg(
+            t(
+              'An error occurred while fetching %s info: %s',
+              resourceLabel,
+              errMsg,
+            ),
           ),
-        ),
-      ),
-    );
+        )(e);
+      }
+    }
+
+    fetchResourceData();
+    return () => { isMounted = false };
   }, []);
 
   function hasPerm(perm: string) {

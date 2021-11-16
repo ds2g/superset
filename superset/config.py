@@ -36,7 +36,7 @@ from cachelib.base import BaseCache
 from celery.schedules import crontab
 from dateutil import tz
 from flask import Blueprint
-from flask_appbuilder.security.manager import AUTH_DB
+from flask_appbuilder.security.manager import AUTH_OAUTH
 from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
 from typing_extensions import Literal
 from werkzeug.local import LocalProxy
@@ -48,6 +48,8 @@ from superset.utils.core import is_test, parse_boolean_string
 from superset.utils.encrypt import SQLAlchemyUtilsAdapter
 from superset.utils.log import DBEventLogger
 from superset.utils.logging_configurator import DefaultLoggingConfigurator
+
+from superset.custom_sso_security_manager import CustomSsoSecurityManager
 
 logger = logging.getLogger(__name__)
 
@@ -191,7 +193,7 @@ QUERY_SEARCH_LIMIT = 1000
 WTF_CSRF_ENABLED = True
 
 # Add endpoints that need to be exempt from CSRF protection
-WTF_CSRF_EXEMPT_LIST = ["superset.views.core.log", "superset.charts.api.data"]
+WTF_CSRF_EXEMPT_LIST = ["superset.views.core.log", "superset.charts.api.data", "superset.datasets.api.post", "superset.datasets.api.put", "superset.charts.api.post", "superset.dashboards.api.post"]
 
 # Whether to run the web server in debug mode or not
 DEBUG = os.environ.get("FLASK_ENV") == "development"
@@ -208,18 +210,19 @@ SHOW_STACKTRACE = True
 
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
-ENABLE_PROXY_FIX = False
-PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
+ENABLE_PROXY_FIX = True
+PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 0, "x_prefix": 1}
 
 # ------------------------------
 # GLOBALS FOR APP Builder
-# ------------------------------
+# -----------------------------
 # Uncomment to setup Your App name
 APP_NAME = "Superset"
 
 # Specify the App icon
-APP_ICON = "/static/assets/images/superset-logo-horiz.png"
-APP_ICON_WIDTH = 126
+APP_ICON = "/static/assets/images/ds2g.png" #superset-logo-horiz.png
+APP_ICON_WIDTH = 107
+
 
 # Specify where clicking the logo would take the user
 # e.g. setting it to '/' would take the user to '/superset/welcome/'
@@ -264,7 +267,27 @@ DRUID_METADATA_LINKS_ENABLED = True
 # AUTH_DB : Is for database (username/password)
 # AUTH_LDAP : Is for LDAP
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
-AUTH_TYPE = AUTH_DB
+AUTH_TYPE = AUTH_OAUTH
+
+OAUTH_PROVIDERS = [
+    {   
+        'name':'ownauth',
+        'token_key':'access_token', # Name of the token in the response of access_token_url
+        'icon':'fa-google',   # Icon for the provider
+        'remote_app': {
+            'client_id':config.client_id,  # Client Id (Identify Superset application)
+            'client_secret':config.client_secret, # Secret for this Client Id (Identify Superset application)
+            'client_kwargs':{
+                'scope': 'openid profile email',        # Scope for the Authorization
+                                                                                                },
+            'access_token_method':'POST',    # HTTP Method to call access_token_url
+            'base_url':'https://dataplatform.ds2g.io',
+            'access_token_url':'https://dataplatform.ds2g.io/api/oauth2/token',
+            'authorize_url':'https://dataplatform.ds2g.io/api/oauth2/authorize',
+            'logout_redirect_uri': 'https://dataplatform.ds2g.io/api/logout'
+        },
+    }
+]
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'

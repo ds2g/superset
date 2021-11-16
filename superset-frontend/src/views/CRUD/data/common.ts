@@ -19,7 +19,7 @@
 import { t } from '@superset-ui/core';
 
 export const commonMenuData = {
-  name: t('Data'),
+  name: t('Datasets'),
   tabs: [
     {
       name: 'Databases',

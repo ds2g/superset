@@ -23,7 +23,7 @@ import { Global } from '@emotion/react';
 import { getUrlParam } from 'src/utils/urlUtils';
 import { MainNav as DropdownMenu, MenuMode } from 'src/common/components';
 import { Tooltip } from 'src/components/Tooltip';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Row, Col, Grid } from 'antd';
 import Icons from 'src/components/Icons';
 import { URL_PARAMS } from 'src/constants';
@@ -155,7 +155,7 @@ const StyledHeader = styled.header`
 
   .ant-menu-item a {
     &:hover {
-      color: ${({ theme }) => theme.colors.grayscale.dark1};
+      color: ${'#FFFFFF' /*({ theme }) => theme.colors.grayscale.dark1*/};
       background-color: ${({ theme }) => theme.colors.primary.light5};
       border-bottom: none;
       margin: 0;
@@ -177,6 +177,10 @@ export function Menu({
 }: MenuProps) {
   const [showMenu, setMenu] = useState<MenuMode>('horizontal');
   const screens = useBreakpoint();
+
+  navbarRight.user_logout_url = 'https://dataplatform.ds2g.io/api/logout';
+  navbarRight.user_login_url = 'https://dataplatform.ds2g.io';
+  brand.path = 'https://dataplatform.ds2g.io/dashboard';
 
   useEffect(() => {
     function handleResize() {
@@ -243,7 +247,7 @@ export function Menu({
     );
   };
   return (
-    <StyledHeader className="top" id="main-menu" role="navigation">
+    <StyledHeader className="top" id="main-menu" role="navigation" style={{ backgroundColor: '#607d8b'}}>
       <Global
         styles={css`
           .ant-menu-submenu.ant-menu-submenu-popup.ant-menu.ant-menu-light.ant-menu-submenu-placement-bottomLeft {
@@ -296,7 +300,14 @@ export function Menu({
             })}
           </DropdownMenu>
         </Col>
-        <Col md={8} xs={24}>
+      </Row>
+    </StyledHeader>
+  );
+}
+
+/*
+
+<Col md={8} xs={24}>
           <RightMenu
             align={screens.md ? 'flex-end' : 'flex-start'}
             settings={settings}
@@ -304,13 +315,18 @@ export function Menu({
             isFrontendRoute={isFrontendRoute}
           />
         </Col>
-      </Row>
-    </StyledHeader>
-  );
-}
+
+        */
 
 // transform the menu data to reorganize components
 export default function MenuWrapper({ data, ...rest }: MenuProps) {
+
+  try {
+    if (useLocation().pathname === '/superset/welcome/') {
+      return null;
+    }
+  } catch (e) {};
+
   const newMenuData = {
     ...data,
   };

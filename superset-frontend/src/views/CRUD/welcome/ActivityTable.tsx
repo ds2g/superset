@@ -210,7 +210,7 @@ export default function ActivityTable({
         return (
           <CardStyles
             onClick={() => {
-              window.location.href = url;
+              window.open(url, '_blank');
             }}
             key={url}
           >

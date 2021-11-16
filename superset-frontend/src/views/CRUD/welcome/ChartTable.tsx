@@ -209,7 +209,7 @@ function ChartTable({
             ),
             buttonStyle: 'tertiary',
             onClick: () => {
-              window.location.assign('/chart/add');
+              window.open('/chart/add', '_blank');
             },
           },
           {
@@ -222,7 +222,7 @@ function ChartTable({
                       'Yes',
                     )},value:!t))`
                   : '/chart/list/';
-              history.push(target);
+                window.open(target, '_blank');
             },
           },
         ]}

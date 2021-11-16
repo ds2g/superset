@@ -92,6 +92,7 @@ type Dataset = {
   owners: Array<Owner>;
   schema: string;
   table_name: string;
+  custom_label: string;
 };
 
 interface DatasetListProps {
@@ -156,6 +157,7 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
   const canDelete = hasPerm('can_write');
   const canCreate = hasPerm('can_write');
   const canExport = hasPerm('can_read');
+  const canSeeAllMenuButtons = hasPerm('can_write_db');
 
   const initialSort = SORT_BY;
 
@@ -246,12 +248,13 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
             original: {
               extra,
               table_name: datasetTitle,
+              custom_label: datasetLabel,
               description,
               explore_url: exploreURL,
             },
           },
         }: any) => {
-          const titleLink = <a href={exploreURL}>{datasetTitle}</a>;
+          const titleLink = <a href={exploreURL}>{datasetLabel}</a>;
           try {
             const parsedExtra = JSON.parse(extra);
             return (
@@ -280,7 +283,7 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
           }
         },
         Header: t('Name'),
-        accessor: 'table_name',
+        accessor: 'custom_label',
       },
       {
         Cell: ({
@@ -478,7 +481,7 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
       },
       {
         Header: t('Search'),
-        id: 'table_name',
+        id: 'custom_label', //table_name
         input: 'search',
         operator: FilterOperator.contains,
       },
@@ -487,8 +490,8 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
   );
 
   const menuData: SubMenuProps = {
-    activeChild: 'Datasets',
-    ...commonMenuData,
+    activeChild: (canSeeAllMenuButtons ? 'Datasets' : undefined),
+    ...(canSeeAllMenuButtons ? (commonMenuData) : { name: t('Datasets') }),
   };
 
   const buttonArr: Array<ButtonProps> = [];

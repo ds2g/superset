@@ -111,6 +111,7 @@ class BaseDatasource(
     schema_perm = Column(String(1000))
 
     sql: Optional[str] = None
+    custom_label: Optional[str] = None
     owners: List[User]
     update_from_object_fields: List[str]
 
@@ -220,6 +221,7 @@ class BaseDatasource(
             "uid": self.uid,
             "schema": self.schema,
             "name": self.name,
+            "custom_label": self.custom_label,
             "type": self.type,
             "connection": self.connection,
             "creator": str(self.created_by),
@@ -265,6 +267,7 @@ class BaseDatasource(
             "table_name": self.datasource_name,
             "type": self.type,
             "schema": self.schema,
+            "custom_label": self.custom_label,
             "offset": self.offset,
             "cache_timeout": self.cache_timeout,
             "params": self.params,

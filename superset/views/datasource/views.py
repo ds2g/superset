@@ -78,7 +78,7 @@ class Datasource(BaseSupersetView):
         )
         orm_datasource.database_id = database_id
 
-         is_gamma = False
+        is_gamma = False
         for role in g.user.roles:
             if str(role) == 'Gamma':
                 is_gamma = True

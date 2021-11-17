@@ -32,6 +32,8 @@ from collections import OrderedDict
 from datetime import date, timedelta
 from typing import Any, Callable, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
+import superset.ownauth_config as config
+
 from cachelib.base import BaseCache
 from celery.schedules import crontab
 from dateutil import tz

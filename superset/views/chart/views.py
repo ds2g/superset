@@ -72,7 +72,6 @@ class SliceModelView(
 
         # only if gamma
         is_gamma = False
-        logging.debug('-------------------------')
         for role in g.user.roles:
             if str(role) == 'Gamma':
                 is_gamma = True

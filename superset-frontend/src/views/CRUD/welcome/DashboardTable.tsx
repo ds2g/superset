@@ -26,7 +26,7 @@ import {
   TableTabTypes,
 } from 'src/views/CRUD/types';
 import handleResourceExport from 'src/utils/export';
-import { useHistory } from 'react-router-dom';
+/* import { useHistory } from 'react-router-dom'; */
 import {
   setInLocalStorage,
   getFromLocalStorage,

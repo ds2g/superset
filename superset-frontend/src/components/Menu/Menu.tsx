@@ -24,7 +24,7 @@ import { getUrlParam } from 'src/utils/urlUtils';
 import { MainNav as DropdownMenu, MenuMode } from 'src/common/components';
 import { Tooltip } from 'src/components/Tooltip';
 import { Link, useLocation } from 'react-router-dom';
-import { Row, Col, Grid } from 'antd';
+import { Row, Col, /* Grid */ } from 'antd';
 import Icons from 'src/components/Icons';
 import { URL_PARAMS } from 'src/constants';
 /* import RightMenu from './MenuRight'; */
@@ -169,7 +169,7 @@ const StyledHeader = styled.header`
 
 const { SubMenu } = DropdownMenu;
 
-const { useBreakpoint } = Grid;
+/* const { useBreakpoint } = Grid; */
 
 export function Menu({
   data: { menu, brand, navbar_right: navbarRight, settings },
@@ -180,7 +180,7 @@ export function Menu({
 
   /* navbarRight.user_logout_url = 'https://dataplatform.ds2g.io/api/logout';
   navbarRight.user_login_url = 'https://dataplatform.ds2g.io'; */
-  brand_path = 'https://dataplatform.ds2g.io/dashboard';
+  const brand_path = 'https://dataplatform.ds2g.io/dashboard';
 
   useEffect(() => {
     function handleResize() {
@@ -251,7 +251,7 @@ export function Menu({
       className="top"
       id="main-menu"
       role="navigation"
-      style={{ backgroundColor: '#607d8b'}}
+      style={{ backgroundColor: '#607d8b' }}
     >
       <Global
         styles={css`
@@ -329,7 +329,9 @@ export default function MenuWrapper({ data, ...rest }: MenuProps) {
     if (useLocation().pathname === '/superset/welcome/') {
       return null;
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 
   const newMenuData = {
     ...data,

@@ -17,7 +17,7 @@
  * under the License.
  */
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, /* useHistory */ } from 'react-router-dom';
 import { t, useTheme } from '@superset-ui/core';
 import { handleDashboardDelete, CardStyles } from 'src/views/CRUD/utils';
 import { isFeatureEnabled, FeatureFlag } from 'src/featureFlags';
@@ -140,7 +140,7 @@ function DashboardCard({
     <CardStyles
       onClick={() => {
         if (!bulkSelectEnabled) {
-            window.open(dashboard.url, '_blank');
+          window.open(dashboard.url, '_blank');
         }
       }}
     >

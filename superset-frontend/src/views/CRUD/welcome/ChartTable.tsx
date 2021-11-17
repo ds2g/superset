@@ -29,7 +29,7 @@ import {
   getFromLocalStorage,
 } from 'src/utils/localStorageHelpers';
 import withToasts from 'src/components/MessageToasts/withToasts';
-import { useHistory } from 'react-router-dom';
+/* import { useHistory } from 'react-router-dom'; */
 import { TableTabTypes } from 'src/views/CRUD/types';
 import PropertiesModal from 'src/explore/components/PropertiesModal';
 import { User } from 'src/types/bootstrapTypes';

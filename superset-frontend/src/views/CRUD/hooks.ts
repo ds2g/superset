@@ -87,7 +87,7 @@ export function useListViewResource<D extends object = any>(
   }
 
   useEffect(() => {
-    if (!infoEnable) return;
+    if (!infoEnable) return undefined;
     let isMounted = true;
     async function fetchResourceData() {
       try {
@@ -108,7 +108,8 @@ export function useListViewResource<D extends object = any>(
           console.log(database_response);
           infoJson = database_response.json || {};
           permissions = permissions.concat(
-            (infoJson.permissions || []).map((p: String) => `${p}_db`));
+            (infoJson.permissions ||[]).map((p: String) => `${p}_db`),
+          );
         }
 
         if (isMounted) {
@@ -131,7 +132,7 @@ export function useListViewResource<D extends object = any>(
 
     fetchResourceData();
     return () => {
-      isMounted = false
+      isMounted = false;
     };
   }, []);
 

@@ -27,7 +27,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Row, Col, Grid } from 'antd';
 import Icons from 'src/components/Icons';
 import { URL_PARAMS } from 'src/constants';
-import RightMenu from './MenuRight';
+/* import RightMenu from './MenuRight'; */
 import { Languages } from './LanguagePicker';
 
 interface BrandProps {
@@ -155,7 +155,7 @@ const StyledHeader = styled.header`
 
   .ant-menu-item a {
     &:hover {
-      color: ${'#FFFFFF' /*({ theme }) => theme.colors.grayscale.dark1*/};
+      color: ${'#FFFFFF' /* ({ theme }) => theme.colors.grayscale.dark1 */};
       background-color: ${({ theme }) => theme.colors.primary.light5};
       border-bottom: none;
       margin: 0;
@@ -176,11 +176,11 @@ export function Menu({
   isFrontendRoute = () => false,
 }: MenuProps) {
   const [showMenu, setMenu] = useState<MenuMode>('horizontal');
-  const screens = useBreakpoint();
+  /* const screens = useBreakpoint(); */
 
-  navbarRight.user_logout_url = 'https://dataplatform.ds2g.io/api/logout';
-  navbarRight.user_login_url = 'https://dataplatform.ds2g.io';
-  brand.path = 'https://dataplatform.ds2g.io/dashboard';
+  /* navbarRight.user_logout_url = 'https://dataplatform.ds2g.io/api/logout';
+  navbarRight.user_login_url = 'https://dataplatform.ds2g.io'; */
+  brand_path = 'https://dataplatform.ds2g.io/dashboard';
 
   useEffect(() => {
     function handleResize() {
@@ -247,7 +247,12 @@ export function Menu({
     );
   };
   return (
-    <StyledHeader className="top" id="main-menu" role="navigation" style={{ backgroundColor: '#607d8b'}}>
+    <StyledHeader
+      className="top"
+      id="main-menu"
+      role="navigation"
+      style={{ backgroundColor: '#607d8b'}}
+    >
       <Global
         styles={css`
           .ant-menu-submenu.ant-menu-submenu-popup.ant-menu.ant-menu-light.ant-menu-submenu-placement-bottomLeft {
@@ -266,7 +271,7 @@ export function Menu({
             title={brand.tooltip}
             arrowPointAtCenter
           >
-            <a className="navbar-brand" href={brand.path}>
+            <a className="navbar-brand" href={brand_path}>
               <img width={brand.width} src={brand.icon} alt={brand.alt} />
             </a>
           </Tooltip>
@@ -320,12 +325,11 @@ export function Menu({
 
 // transform the menu data to reorganize components
 export default function MenuWrapper({ data, ...rest }: MenuProps) {
-
   try {
     if (useLocation().pathname === '/superset/welcome/') {
       return null;
     }
-  } catch (e) {};
+  } catch (e) {}
 
   const newMenuData = {
     ...data,

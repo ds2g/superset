@@ -63,7 +63,7 @@ function DashboardCard({
   showThumbnails,
   handleBulkDashboardExport,
 }: DashboardCardProps) {
-  const history = useHistory();
+  /* const history = useHistory(); */
   const canEdit = hasPerm('can_write');
   const canDelete = hasPerm('can_write');
   const canExport = hasPerm('can_read');

@@ -96,9 +96,9 @@ export function useListViewResource<D extends object = any>(
             keys: ['permissions'],
           })}`,
         });
-        let infoJson  = resource_response.json || {};
+        let infoJson = resource_response.json || {};
         let permissions = infoJson.permissions || [];
-  
+
         if (resource === 'dataset') {
           const database_response = await SupersetClient.get({
             endpoint: `/api/v1/database/_info?q=${rison.encode({
@@ -107,11 +107,10 @@ export function useListViewResource<D extends object = any>(
           });
           console.log(database_response);
           infoJson = database_response.json || {};
-          permissions = permissions.concat((infoJson.permissions || []).map((p: String) => {
-            return `${p}_db`;
-          }));
+          permissions = permissions.concat(
+            (infoJson.permissions || []).map((p: String) => `${p}_db`));
         }
-  
+
         if (isMounted) {
           updateState({
             permissions,
@@ -131,7 +130,9 @@ export function useListViewResource<D extends object = any>(
     }
 
     fetchResourceData();
-    return () => { isMounted = false };
+    return () => {
+      isMounted = false
+    };
   }, []);
 
   function hasPerm(perm: string) {

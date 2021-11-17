@@ -481,7 +481,7 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
       },
       {
         Header: t('Search'),
-        id: 'custom_label', //table_name
+        id: 'custom_label', // table_name
         input: 'search',
         operator: FilterOperator.contains,
       },
@@ -490,8 +490,8 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
   );
 
   const menuData: SubMenuProps = {
-    activeChild: (canSeeAllMenuButtons ? 'Datasets' : undefined),
-    ...(canSeeAllMenuButtons ? (commonMenuData) : { name: t('Datasets') }),
+    activeChild: canSeeAllMenuButtons ? 'Datasets' : undefined,
+    ...(canSeeAllMenuButtons ? commonMenuData : { name: t('Datasets') }),
   };
 
   const buttonArr: Array<ButtonProps> = [];

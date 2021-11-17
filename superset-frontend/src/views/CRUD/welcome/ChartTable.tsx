@@ -63,7 +63,7 @@ function ChartTable({
   showThumbnails,
   examples,
 }: ChartTableProps) {
-  const history = useHistory();
+  /* const history = useHistory(); */
   const filterStore = getFromLocalStorage(HOMEPAGE_CHART_FILTER, null);
   const initialFilter = filterStore || TableTabTypes.EXAMPLES;
 
@@ -222,7 +222,7 @@ function ChartTable({
                       'Yes',
                     )},value:!t))`
                   : '/chart/list/';
-                window.open(target, '_blank');
+              window.open(target, '_blank');
             },
           },
         ]}

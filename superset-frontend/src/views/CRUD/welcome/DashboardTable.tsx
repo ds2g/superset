@@ -59,7 +59,7 @@ function DashboardTable({
   showThumbnails,
   examples,
 }: DashboardTableProps) {
-  const history = useHistory();
+  /* const history = useHistory(); */
   const filterStore = getFromLocalStorage(HOMEPAGE_DASHBOARD_FILTER, null);
   const defaultFilter = filterStore || TableTabTypes.EXAMPLES;
 
@@ -224,7 +224,7 @@ function DashboardTable({
                       'Yes',
                     )},value:!t))`
                   : '/dashboard/list/';
-                window.open(target, '_blank');
+              window.open(target, '_blank');
             },
           },
         ]}

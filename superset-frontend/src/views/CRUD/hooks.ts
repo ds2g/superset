@@ -108,7 +108,7 @@ export function useListViewResource<D extends object = any>(
           console.log(database_response);
           infoJson = database_response.json || {};
           permissions = permissions.concat(
-            (infoJson.permissions ||[]).map((p: String) => `${p}_db`),
+            (infoJson.permissions ||[ ]).map((p: String) => `${p}_db`),
           );
         }
 

@@ -117,6 +117,7 @@ export const MenuItem = styled(AntdMenu.Item)`
 export const StyledNav = styled(AntdMenu)`
   line-height: 51px;
   border: none;
+  background-color: #607d8b;
 
   & > .ant-menu-item,
   & > .ant-menu-submenu {
@@ -140,18 +141,21 @@ export const StyledNav = styled(AntdMenu)`
 
   & > .ant-menu-item > a {
     padding: ${({ theme }) => theme.gridUnit * 4}px;
+    color: #ffffff;
   }
 `;
+
+// color: ${({ theme }) => theme.colors.grayscale.dark1};
+// background-color: ${({ theme }) => theme.colors.primary.light5};
 
 export const StyledSubMenu = styled(AntdMenu.SubMenu)`
   color: ${({ theme }) => theme.colors.grayscale.dark1};
   border-bottom: none;
   .ant-menu-submenu-open,
   .ant-menu-submenu-active {
+    color: #607d8b;
     background-color: ${({ theme }) => theme.colors.primary.light5};
     .ant-menu-submenu-title {
-      color: ${({ theme }) => theme.colors.grayscale.dark1};
-      background-color: ${({ theme }) => theme.colors.primary.light5};
       border-bottom: none;
       margin: 0;
       &:after {
@@ -162,6 +166,7 @@ export const StyledSubMenu = styled(AntdMenu.SubMenu)`
   }
   .ant-menu-submenu-title {
     position: relative;
+    color: #ffffff;
     top: ${({ theme }) => -theme.gridUnit - 3}px;
     &:after {
       content: '';
@@ -180,6 +185,7 @@ export const StyledSubMenu = styled(AntdMenu.SubMenu)`
     top: 67%;
   }
   & > .ant-menu-submenu-title {
+    color: #ffffff;
     padding: 0 ${({ theme }) => theme.gridUnit * 6}px 0
       ${({ theme }) => theme.gridUnit * 3}px !important;
     span[role='img'] {
@@ -188,7 +194,7 @@ export const StyledSubMenu = styled(AntdMenu.SubMenu)`
       top: ${({ theme }) => theme.gridUnit * 5.25}px;
       svg {
         font-size: ${({ theme }) => theme.gridUnit * 6}px;
-        color: ${({ theme }) => theme.colors.grayscale.base};
+        color: #ffffff;
       }
     }
     & > span {

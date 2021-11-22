@@ -19,12 +19,7 @@
 import React from 'react';
 import { MainNav as Menu } from 'src/common/components';
 import { t, styled, css, SupersetTheme } from '@superset-ui/core';
-import { Link } from 'react-router-dom';
 import Icons from 'src/components/Icons';
-import findPermission from 'src/dashboard/util/findPermission';
-import { useSelector } from 'react-redux';
-import { UserWithPermissionsAndRoles } from 'src/types/bootstrapTypes';
-import LanguagePicker from './LanguagePicker';
 import { NavBarProps, MenuObjectProps } from './Menu';
 
 export const dropdownItems = [
@@ -58,9 +53,6 @@ const versionInfoStyles = (theme: SupersetTheme) => css`
   font-size: ${theme.typography.sizes.xs}px;
   white-space: nowrap;
 `;
-const StyledI = styled.div`
-  color: ${({ theme }) => theme.colors.primary.dark1};
-`;
 
 const StyledDiv = styled.div<{ align: string }>`
   display: flex;
@@ -93,76 +85,13 @@ const RightMenu = ({
   navbarRight,
   isFrontendRoute,
 }: RightMenuProps) => {
-  const { roles } = useSelector<any, UserWithPermissionsAndRoles>(
-    state => state.user,
-  );
-
-  // if user has any of these roles the dropdown will appear
-  const canSql = findPermission('can_sqllab', 'Superset', roles);
-  const canDashboard = findPermission('can_write', 'Dashboard', roles);
-  const canChart = findPermission('can_write', 'Chart', roles);
-  const showActionDropdown = canSql || canChart || canDashboard;
   return (
     <StyledDiv align={align}>
       <Menu mode="horizontal">
-        {!navbarRight.user_is_anonymous && showActionDropdown && (
-          <SubMenu
-            data-test="new-dropdown"
-            title={
-              <StyledI data-test="new-dropdown-icon" className="fa fa-plus" />
-            }
-            icon={<Icons.TriangleDown />}
-          >
-            {dropdownItems.map(
-              menu =>
-                findPermission(menu.perm, menu.view, roles) && (
-                  <Menu.Item key={menu.label}>
-                    <a href={menu.url}>
-                      <i
-                        data-test={`menu-item-${menu.label}`}
-                        className={`fa ${menu.icon}`}
-                      />{' '}
-                      {menu.label}
-                    </a>
-                  </Menu.Item>
-                ),
-            )}
-          </SubMenu>
-        )}
         <SubMenu title="Settings" icon={<Icons.TriangleDown iconSize="xl" />}>
-          {settings.map((section, index) => [
-            <Menu.ItemGroup key={`${section.label}`} title={section.label}>
-              {section.childs?.map(child => {
-                if (typeof child !== 'string') {
-                  return (
-                    <Menu.Item key={`${child.label}`}>
-                      {isFrontendRoute(child.url) ? (
-                        <Link to={child.url || ''}>{child.label}</Link>
-                      ) : (
-                        <a href={child.url}>{child.label}</a>
-                      )}
-                    </Menu.Item>
-                  );
-                }
-                return null;
-              })}
-            </Menu.ItemGroup>,
-            index < settings.length - 1 && <Menu.Divider />,
-          ])}
-
           {!navbarRight.user_is_anonymous && [
             <Menu.Divider key="user-divider" />,
             <Menu.ItemGroup key="user-section" title={t('User')}>
-              {navbarRight.user_profile_url && (
-                <Menu.Item key="profile">
-                  <a href={navbarRight.user_profile_url}>{t('Profile')}</a>
-                </Menu.Item>
-              )}
-              {navbarRight.user_info_url && (
-                <Menu.Item key="info">
-                  <a href={navbarRight.user_info_url}>{t('Info')}</a>
-                </Menu.Item>
-              )}
               <Menu.Item key="logout">
                 <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
               </Menu.Item>
@@ -196,34 +125,7 @@ const RightMenu = ({
             </Menu.ItemGroup>,
           ]}
         </SubMenu>
-        {navbarRight.show_language_picker && (
-          <LanguagePicker
-            locale={navbarRight.locale}
-            languages={navbarRight.languages}
-          />
-        )}
       </Menu>
-      {navbarRight.documentation_url && (
-        <StyledAnchor
-          href={navbarRight.documentation_url}
-          target="_blank"
-          rel="noreferrer"
-          title={t('Documentation')}
-        >
-          <i className="fa fa-question" />
-          &nbsp;
-        </StyledAnchor>
-      )}
-      {navbarRight.bug_report_url && (
-        <StyledAnchor
-          href={navbarRight.bug_report_url}
-          target="_blank"
-          rel="noreferrer"
-          title={t('Report a bug')}
-        >
-          <i className="fa fa-bug" />
-        </StyledAnchor>
-      )}
       {navbarRight.user_is_anonymous && (
         <StyledAnchor href={navbarRight.user_login_url}>
           <i className="fa fa-fw fa-sign-in" />

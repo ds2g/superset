@@ -27,7 +27,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Row, Col /* ,  Grid */ } from 'antd';
 import Icons from 'src/components/Icons';
 import { URL_PARAMS } from 'src/constants';
-/* import RightMenu from './MenuRight'; */
+import RightMenu from './MenuRight';
 import { Languages } from './LanguagePicker';
 
 interface BrandProps {
@@ -304,6 +304,14 @@ export function Menu({
               return renderSubMenu(props);
             })}
           </DropdownMenu>
+        </Col>
+        <Col md={8} xs={24}>
+          <RightMenu
+            align={screens.md ? 'flex-end' : 'flex-start'}
+            settings={settings}
+            navbarRight={navbarRight}
+            isFrontendRoute={isFrontendRoute}
+          />
         </Col>
       </Row>
     </StyledHeader>

@@ -497,6 +497,7 @@ class SqlaTable(Model, BaseDatasource):  # pylint: disable=too-many-public-metho
     __table_args__ = (UniqueConstraint("database_id", "schema", "table_name"),)
 
     table_name = Column(String(250), nullable=False)
+    custom_label = Column(String(250))
     main_dttm_col = Column(String(250))
     database_id = Column(Integer, ForeignKey("dbs.id"), nullable=False)
     fetch_values_predicate = Column(Text)

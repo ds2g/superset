@@ -84,56 +84,53 @@ const RightMenu = ({
   settings,
   navbarRight,
   isFrontendRoute,
-}: RightMenuProps) => {
-  return (
-    <StyledDiv align={align}>
-      <Menu mode="horizontal">
-        <SubMenu title="Settings" icon={<Icons.TriangleDown iconSize="xl" />}>
-          {!navbarRight.user_is_anonymous && [
-            <Menu.Divider key="user-divider" />,
-            <Menu.ItemGroup key="user-section" title={t('User')}>
-              <Menu.Item key="logout">
-                <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
-              </Menu.Item>
-            </Menu.ItemGroup>,
-          ]}
-          {(navbarRight.version_string || navbarRight.version_sha) && [
-            <Menu.Divider key="version-info-divider" />,
-            <Menu.ItemGroup key="about-section" title={t('About')}>
-              <div className="about-section">
-                {navbarRight.show_watermark && (
-                  <div css={versionInfoStyles}>
-                    {t('Powered by Apache Superset')}
-                  </div>
-                )}
-                {navbarRight.version_string && (
-                  <div css={versionInfoStyles}>
-                    Version: {navbarRight.version_string}
-                  </div>
-                )}
-                {navbarRight.version_sha && (
-                  <div css={versionInfoStyles}>
-                    SHA: {navbarRight.version_sha}
-                  </div>
-                )}
-                {navbarRight.build_number && (
-                  <div css={versionInfoStyles}>
-                    Build: {navbarRight.build_number}
-                  </div>
-                )}
-              </div>
-            </Menu.ItemGroup>,
-          ]}
-        </SubMenu>
-      </Menu>
-      {navbarRight.user_is_anonymous && (
-        <StyledAnchor href={navbarRight.user_login_url}>
-          <i className="fa fa-fw fa-sign-in" />
-          {t('Login')}
-        </StyledAnchor>
-      )}
-    </StyledDiv>
-  );
-};
-
+}: RightMenuProps) => (
+  <StyledDiv align={align}>
+    <Menu mode="horizontal">
+      <SubMenu title="Settings" icon={<Icons.TriangleDown iconSize="xl" />}>
+        {!navbarRight.user_is_anonymous && [
+          <Menu.Divider key="user-divider" />,
+          <Menu.ItemGroup key="user-section" title={t('User')}>
+            <Menu.Item key="logout">
+              <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
+            </Menu.Item>
+          </Menu.ItemGroup>,
+        ]}
+        {(navbarRight.version_string || navbarRight.version_sha) && [
+          <Menu.Divider key="version-info-divider" />,
+          <Menu.ItemGroup key="about-section" title={t('About')}>
+            <div className="about-section">
+              {navbarRight.show_watermark && (
+                <div css={versionInfoStyles}>
+                  {t('Powered by Apache Superset')}
+                </div>
+              )}
+              {navbarRight.version_string && (
+                <div css={versionInfoStyles}>
+                  Version: {navbarRight.version_string}
+                </div>
+              )}
+              {navbarRight.version_sha && (
+                <div css={versionInfoStyles}>
+                  SHA: {navbarRight.version_sha}
+                </div>
+              )}
+              {navbarRight.build_number && (
+                <div css={versionInfoStyles}>
+                  Build: {navbarRight.build_number}
+                </div>
+              )}
+            </div>
+          </Menu.ItemGroup>,
+        ]}
+      </SubMenu>
+    </Menu>
+    {navbarRight.user_is_anonymous && (
+      <StyledAnchor href={navbarRight.user_login_url}>
+        <i className="fa fa-fw fa-sign-in" />
+        {t('Login')}
+      </StyledAnchor>
+    )}
+  </StyledDiv>
+);
 export default RightMenu;

@@ -24,7 +24,7 @@ import { getUrlParam } from 'src/utils/urlUtils';
 import { MainNav as DropdownMenu, MenuMode } from 'src/common/components';
 import { Tooltip } from 'src/components/Tooltip';
 import { Link, useLocation } from 'react-router-dom';
-import { Row, Col /* ,  Grid */ } from 'antd';
+import { Row, Col, Grid } from 'antd';
 import Icons from 'src/components/Icons';
 import { URL_PARAMS } from 'src/constants';
 import RightMenu from './MenuRight';
@@ -169,14 +169,14 @@ const StyledHeader = styled.header`
 
 const { SubMenu } = DropdownMenu;
 
-/* const { useBreakpoint } = Grid; */
+const { useBreakpoint } = Grid;
 
 export function Menu({
   data: { menu, brand, navbar_right: navbarRight, settings },
   isFrontendRoute = () => false,
 }: MenuProps) {
   const [showMenu, setMenu] = useState<MenuMode>('horizontal');
-  /* const screens = useBreakpoint(); */
+  const screens = useBreakpoint();
 
   /* navbarRight.user_logout_url = 'https://dataplatform.ds2g.io/api/logout';
   navbarRight.user_login_url = 'https://dataplatform.ds2g.io'; */
@@ -317,19 +317,6 @@ export function Menu({
     </StyledHeader>
   );
 }
-
-/*
-
-<Col md={8} xs={24}>
-          <RightMenu
-            align={screens.md ? 'flex-end' : 'flex-start'}
-            settings={settings}
-            navbarRight={navbarRight}
-            isFrontendRoute={isFrontendRoute}
-          />
-        </Col>
-
-        */
 
 // transform the menu data to reorganize components
 export default function MenuWrapper({ data, ...rest }: MenuProps) {

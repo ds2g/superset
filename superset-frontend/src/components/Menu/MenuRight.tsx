@@ -18,7 +18,7 @@
  */
 import React from 'react';
 import { MainNav as Menu } from 'src/common/components';
-import { t, styled, css, SupersetTheme } from '@superset-ui/core';
+import { t, styled /*, css, SupersetTheme*/ } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
 import { NavBarProps, MenuObjectProps } from './Menu';
 
@@ -46,13 +46,14 @@ export const dropdownItems = [
   },
 ];
 
-const versionInfoStyles = (theme: SupersetTheme) => css`
+/* const versionInfoStyles = (theme: SupersetTheme) => css`
   padding: ${theme.gridUnit * 1.5}px ${theme.gridUnit * 4}px
     ${theme.gridUnit * 4}px ${theme.gridUnit * 7}px;
   color: ${theme.colors.grayscale.base};
   font-size: ${theme.typography.sizes.xs}px;
   white-space: nowrap;
 `;
+*/
 
 const StyledDiv = styled.div<{ align: string }>`
   display: flex;

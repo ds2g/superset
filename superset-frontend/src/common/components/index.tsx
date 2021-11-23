@@ -185,9 +185,6 @@ export const StyledSubMenu = styled(AntdMenu.SubMenu)`
       background-color: ${({ theme }) => theme.colors.primary.base};
     }
   }
-  .ant-menu-submenu-title:hover {
-    color: #607d8b;
-  }
   .ant-menu-submenu-arrow {
     top: 67%;
   }
@@ -209,10 +206,12 @@ export const StyledSubMenu = styled(AntdMenu.SubMenu)`
       top: 7px;
     }
     &:hover {
-      color: ${({ theme }) => theme.colors.primary.base};
+      color: #FFFFFF;
     }
   }
 `;
+
+
 
 export declare type MenuMode =
   | 'vertical'

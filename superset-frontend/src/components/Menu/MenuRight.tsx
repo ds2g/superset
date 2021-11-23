@@ -18,7 +18,7 @@
  */
 import React from 'react';
 import { MainNav as Menu } from 'src/common/components';
-import { t, styled /*, css, SupersetTheme*/ } from '@superset-ui/core';
+import { t, styled /* , css, SupersetTheme */ } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
 import { NavBarProps, MenuObjectProps } from './Menu';
 

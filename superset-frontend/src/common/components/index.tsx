@@ -206,12 +206,10 @@ export const StyledSubMenu = styled(AntdMenu.SubMenu)`
       top: 7px;
     }
     &:hover {
-      color: #FFFFFF;
+      color: #ffffff;
     }
   }
 `;
-
-
 
 export declare type MenuMode =
   | 'vertical'

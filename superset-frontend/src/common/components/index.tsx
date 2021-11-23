@@ -143,6 +143,10 @@ export const StyledNav = styled(AntdMenu)`
     padding: ${({ theme }) => theme.gridUnit * 4}px;
     color: #ffffff;
   }
+
+  & > .ant-menu-item > a:hover {
+    color: #607d8b;
+  }
 `;
 
 // color: ${({ theme }) => theme.colors.grayscale.dark1};
@@ -180,6 +184,9 @@ export const StyledSubMenu = styled(AntdMenu.SubMenu)`
       transition: all ${({ theme }) => theme.transitionTiming}s;
       background-color: ${({ theme }) => theme.colors.primary.base};
     }
+  }
+  .ant-menu-submenu-title:hover {
+    color: #607d8b;
   }
   .ant-menu-submenu-arrow {
     top: 67%;

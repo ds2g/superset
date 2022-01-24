@@ -35,6 +35,7 @@ from superset.extensions import db, event_logger, security_manager
 from superset.models.core import FavStar
 from superset.models.dashboard import Dashboard
 from superset.models.slice import Slice
+from superset.models.user_tagroup import UserTAGroup
 from superset.schemas import error_payload_content
 from superset.sql_lab import Query as SqllabQuery
 from superset.stats_logger import BaseStatsLogger
@@ -511,8 +512,19 @@ class BaseSupersetModelRestApi(ModelRestApi):
             filters, order_column, order_direction, page=page, page_size=page_size
         )
 
+        rows_filtered = {} 
+        user_id = g.user.get_id()
+        user_group = db.session.query(UserTAGroup.tagroup).filter_by(user_id=user_id).first()
+        if len(rows) > 0 and hasattr(rows[0], 'username'):
+            allowed_users = db.session.query(UserTAGroup.user_id).filter_by(tagroup=user_group).all()
+            allowed_users = [user[0] for user in allowed_users]
+
+            rows_filtered = [row for row in rows if getattr(row, 'id') in allowed_users]
+        elif len(rows) > 0:
+            rows_filtered = [row for row in rows if getattr(row, 'tagroup') == user_group]
+
         # produce response
-        result = self._get_result_from_rows(datamodel, rows, column_name)
+        result = self._get_result_from_rows(datamodel, rows_filtered, column_name)
 
         # If ids are specified make sure we fetch and include them on the response
         if ids:

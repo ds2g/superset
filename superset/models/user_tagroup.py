@@ -36,7 +36,4 @@ class UserTAGroup(Model, AuditMixinNullable):
     __tablename__ = "user_tagroup"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("ab_user.id"))
-    user = relationship(
-        security_manager.user_model, backref="extra_attributes", foreign_keys=[user_id]
-    )
     tagroup = Column(Integer)

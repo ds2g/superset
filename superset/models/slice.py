@@ -88,6 +88,8 @@ class Slice(  # pylint: disable=too-many-public-methods
         lazy="subquery",
     )
 
+    tagroup = Column(Integer)
+
     token = ""
 
     export_fields = [

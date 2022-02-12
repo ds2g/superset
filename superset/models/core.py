@@ -80,6 +80,7 @@ class Url(Model, AuditMixinNullable):
     __tablename__ = "url"
     id = Column(Integer, primary_key=True)
     url = Column(Text)
+    slug = Column(String(255))
 
 
 class KeyValue(Model):  # pylint: disable=too-few-public-methods

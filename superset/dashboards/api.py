@@ -404,6 +404,12 @@ class DashboardRestApi(BaseSupersetModelRestApi):
         except DashboardNotFoundError:
             return self.response_404()
 
+    
+    # TODO duplicate of views.dashboard.views.generate_slug
+    def generate_slug(self, length: int) -> str:
+        pool = string.ascii_letters + string.digits
+        return ''.join(random.choice(pool) for i in range(length))
+
     @expose("/", methods=["POST"])
     @protect()
     @safe
@@ -452,6 +458,8 @@ class DashboardRestApi(BaseSupersetModelRestApi):
             return self.response_400(message="Request is not JSON")
         try:
             item = self.add_model_schema.load(request.json)
+            # TODO testing
+            item['slug'] = self.generate_slug(64)
         # This validates custom Schema with custom validations
         except ValidationError as error:
             return self.response_400(message=error.messages)

@@ -166,9 +166,9 @@ def get_form_data(  # pylint: disable=too-many-locals
         form_data.update(json_data)
 
     if has_request_context():  # type: ignore
-        url_id = request.args.get("r")
-        if url_id:
-            saved_url = db.session.query(models.Url).filter_by(id=url_id).first()
+        url_slug = request.args.get("r")
+        if url_slug:
+            saved_url = db.session.query(models.Url).filter_by(slug=url_slug).first()
             if saved_url:
                 url_str = parse.unquote_plus(
                     saved_url.url.split("?")[1][10:], encoding="utf-8"

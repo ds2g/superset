@@ -21,6 +21,8 @@ from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.security.sqla.models import User
 from marshmallow import ValidationError
 
+from superset import db
+from superset.models.user_tagroup import UserTAGroup
 from superset.commands.base import BaseCommand, CreateMixin
 from superset.commands.utils import populate_roles
 from superset.dao.exceptions import DAOCreateFailedError
@@ -38,6 +40,9 @@ class CreateDashboardCommand(CreateMixin, BaseCommand):
     def __init__(self, user: User, data: Dict[str, Any]):
         self._actor = user
         self._properties = data.copy()
+        tagroup = db.session.query(UserTAGroup.tagroup).filter_by(user_id=user.id).first()
+        tagroup = tagroup[0]
+        self._properties['tagroup'] = tagroup
 
     def run(self) -> Model:
         self.validate()

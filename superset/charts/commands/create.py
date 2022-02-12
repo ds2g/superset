@@ -33,6 +33,9 @@ from superset.commands.utils import get_datasource_by_id
 from superset.dao.exceptions import DAOCreateFailedError
 from superset.dashboards.dao import DashboardDAO
 
+from superset import db
+from superset.models.user_tagroup import UserTAGroup
+
 logger = logging.getLogger(__name__)
 
 
@@ -40,6 +43,9 @@ class CreateChartCommand(CreateMixin, BaseCommand):
     def __init__(self, user: User, data: Dict[str, Any]):
         self._actor = user
         self._properties = data.copy()
+        tagroup = db.session.query(UserTAGroup.tagroup).filter_by(user_id=user.id).first()
+        tagroup = tagroup[0]
+        self._properties['tagroup'] = tagroup
 
     def run(self) -> Model:
         self.validate()

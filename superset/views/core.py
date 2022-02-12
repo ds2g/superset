@@ -95,6 +95,7 @@ from superset.models.datasource_access_request import DatasourceAccessRequest
 from superset.models.slice import Slice
 from superset.models.sql_lab import Query, TabState
 from superset.models.user_attributes import UserAttribute
+from superset.models.user_tagroup import UserTAGroup
 from superset.queries.dao import QueryDAO
 from superset.security.analytics_db_safety import check_sqlalchemy_uri
 from superset.sql_lab import get_sql_results
@@ -991,6 +992,9 @@ class Superset(BaseSupersetView):  # pylint: disable=too-many-public-methods
         slc.last_saved_at = datetime.now()
         slc.slice_name = slice_name
         slc.query_context = query_context
+        
+        tagroup = db.session.query(UserTAGroup.tagroup).filter_by(user_id=g.user.id).first()
+        slc.tagroup = tagroup[0]
 
         if action == "saveas" and slice_add_perm:
             ChartDAO.save(slc)

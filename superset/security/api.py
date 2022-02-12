@@ -17,6 +17,9 @@
 import logging
 #import json
 
+#import sqlalchemy as sa
+#from alembic import op
+
 from flask import Response, request
 from flask_appbuilder import expose
 from flask_appbuilder.api import BaseApi, safe
@@ -24,8 +27,10 @@ from flask_appbuilder.security.decorators import permission_name, protect
 from flask_appbuilder.security.sqla.models import PermissionView
 from flask_wtf.csrf import generate_csrf
 
-from superset import security_manager as sm
+from flask_appbuilder.security.sqla.models import User
+from superset import security_manager as sm, db
 from superset.extensions import event_logger
+from superset.models.user_tagroup import UserTAGroup
 
 logger = logging.getLogger(__name__)
 
@@ -143,6 +148,22 @@ class SecurityRestApi(BaseApi):
           role_names.append('Gamma')
 
         user = sm.add_user(data['username'], 'DS2G', "User", data['email'], list(map(lambda rn:sm.find_role(rn), role_names)), password=data['password'])
+
+        tagroup = 0
+        # TODO check if undefined is sent for main accounts
+        if 'mainUserUsername' in data:
+          main_user_id = db.session.query(User.id).filter_by(username=data['mainUserUsername']).first()
+          main_user_id = main_user_id[0]
+          tagroup = db.session.query(UserTAGroup.tagroup).filter_by(user_id=main_user_id).first()
+          tagroup = tagroup[0]
+        else:
+          tagroup = db.session.query(UserTAGroup.tagroup).order_by(UserTAGroup.tagroup.desc()).first()
+          tagroup = tagroup[0]
+          tagroup += 1
+
+        utag_params = {'id': None, 'user_id': user.id, 'tagroup': tagroup}
+        db.session.add(UserTAGroup(id=utag_params['id'], user_id=utag_params['user_id'], tagroup=utag_params['tagroup']))
+
         sm.get_session.commit()
         return self.response(200, id=user.id)
 
@@ -184,4 +205,61 @@ class SecurityRestApi(BaseApi):
             sm.get_session.rollback()
             raise DAODeleteFailedError(exception=ex)
 
+        return self.response(200)
+
+    @expose("/update_dataset_visibility/", methods=["PUT"])
+    @event_logger.log_this
+    @protect()
+    @safe
+    @permission_name("read")
+    def update_dataset_visibility(self) -> Response:
+        """
+        Return the csrf token
+        ---
+        get:
+          description: >-
+            Fetch the CSRF token
+          responses:
+            200:
+              description: Result contains the CSRF token
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                        result:
+                          type: string
+            401:
+              $ref: '#/components/responses/401'
+            500:
+              $ref: '#/components/responses/500'
+        """
+        data = request.json
+        role = sm.find_role('Public')
+        pns_add = []
+        pns_remove = []
+
+        for dataset in data['datasetsToUpdate']:
+          ds_perm = 'datasource access on [Tracking].[' + dataset['name'] + '](id:' + dataset['id'] + ')'
+          if dataset['public']:
+            pns_add.append(ds_perm)
+          else:
+            pns_remove.append(ds_perm)
+        
+        pvms = sm.get_session.query(PermissionView).all()
+
+        for permission_view in pvms:
+          for perm_name in pns_add:
+            if self.custom_pvm_check(permission_view, perm_name):
+              role.permissions.append(permission_view)
+              break
+        
+        for permission_view in pvms:
+          for perm_name in pns_remove:
+            if self.custom_pvm_check(permission_view, perm_name):
+              role.permissions.remove(permission_view)
+              break
+
+        sm.get_session.merge(role)
+        sm.get_session.commit()
         return self.response(200)

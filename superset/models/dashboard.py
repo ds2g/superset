@@ -148,6 +148,7 @@ class Dashboard(Model, AuditMixinNullable, ImportExportMixin):
     owners = relationship(security_manager.user_model, secondary=dashboard_user)
     published = Column(Boolean, default=False)
     roles = relationship(security_manager.role_model, secondary=DashboardRoles)
+    tagroup = Column(Integer)
     _filter_sets = relationship(
         "FilterSet", back_populates="dashboard", cascade="all, delete"
     )

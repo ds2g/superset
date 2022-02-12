@@ -32,6 +32,7 @@ import VizTypeGallery, {
 type Dataset = {
   id: number;
   table_name: string;
+  custom_label: string,
   description: string;
   datasource_type: string;
 };
@@ -259,7 +260,7 @@ export default class AddSliceContainer extends React.PureComponent<
       }[] = response.json.result.map((item: Dataset) => ({
         value: `${item.id}__${item.datasource_type}`,
         customLabel: this.newLabel(item),
-        label: item.table_name,
+        label: item.custom_label || item.table_name,
       }));
       return {
         data: list,

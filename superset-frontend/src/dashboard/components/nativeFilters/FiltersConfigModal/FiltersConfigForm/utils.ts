@@ -83,7 +83,7 @@ export const datasetToSelectOption = (
   item: DatasourceMeta & { table_name: string },
 ): DatasetSelectValue => ({
   value: item.id,
-  label: item.table_name,
+  label: item.custom_label || item.table_name,
 });
 
 // TODO: add column_types field to DatasourceMeta

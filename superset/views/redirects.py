@@ -15,6 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
+import string
+import random
 from typing import Optional
 
 from flask import flash, request, Response
@@ -44,13 +46,13 @@ class R(BaseSupersetView):  # pylint: disable=invalid-name
         return False
 
     @event_logger.log_this
-    @expose("/<int:url_id>")
-    def index(self, url_id: int) -> FlaskResponse:
-        url = db.session.query(models.Url).get(url_id)
+    @expose("/<url_slug>")
+    def index(self, url_slug: string) -> FlaskResponse:
+        url = db.session.query(models.Url).filter_by(slug=url_slug).first()
         if url and url.url:
             explore_url = "//superset/explore/?"
             if url.url.startswith(explore_url):
-                explore_url += f"r={url_id}"
+                explore_url += f"r={url_slug}"
                 return redirect(explore_url[1:])
             if self._validate_url(url.url):
                 return redirect(url.url[1:])
@@ -58,6 +60,11 @@ class R(BaseSupersetView):  # pylint: disable=invalid-name
 
         flash("URL to nowhere...", "danger")
         return redirect("/")
+    
+    # TODO duplicate of views.dashboard.views.generate_slug
+    def generate_slug(self, length: int) -> str:
+        pool = string.ascii_letters + string.digits
+        return ''.join(random.choice(pool) for i in range(length))
 
     @event_logger.log_this
     @has_access_api
@@ -67,11 +74,11 @@ class R(BaseSupersetView):  # pylint: disable=invalid-name
         if not self._validate_url(url):
             logger.warning("Invalid URL")
             return Response("Invalid URL", 400)
-        obj = models.Url(url=url)
+        obj = models.Url(url=url, slug=self.generate_slug(64))
         db.session.add(obj)
         db.session.commit()
         return Response(
-            "{scheme}://{request.headers[Host]}/r/{obj.id}".format(
+            "{scheme}://{request.headers[Host]}/r/{obj.slug}".format(
                 scheme=request.scheme, request=request, obj=obj
             ),
             mimetype="text/plain",

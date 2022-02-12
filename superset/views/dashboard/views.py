@@ -15,6 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 import re
+import random
+import string
 from typing import List, Union
 
 from flask import g, redirect, request, Response
@@ -27,6 +29,7 @@ from flask_babel import gettext as __, lazy_gettext as _
 from superset import db, event_logger, is_feature_enabled
 from superset.constants import MODEL_VIEW_RW_METHOD_PERMISSION_MAP, RouteMethod
 from superset.models.dashboard import Dashboard as DashboardModel
+from superset.models.user_tagroup import UserTAGroup
 from superset.typing import FlaskResponse
 from superset.utils import core as utils
 from superset.views.base import (
@@ -112,16 +115,23 @@ class Dashboard(BaseSupersetView):
     class_permission_name = "Dashboard"
     method_permission_name = MODEL_VIEW_RW_METHOD_PERMISSION_MAP
 
+    # TODO duplicate of dashboard.api.generate_slug
+    def generate_slug(self, length: int) -> str:
+        pool = string.ascii_letters + string.digits
+        return ''.join(random.choice(pool) for i in range(length))
+
     @has_access
     @expose("/new/")
     def new(self) -> FlaskResponse:  # pylint: disable=no-self-use
         """Creates a new, blank dashboard and redirects to it in edit mode"""
+        tagroup = db.session.query(UserTAGroup.tagroup).filter_by(user_id=g.user.id).first()
+        tagroup = tagroup[0]
         new_dashboard = DashboardModel(
-            dashboard_title="[ untitled dashboard ]", owners=[g.user]
+            dashboard_title="[ untitled dashboard ]", owners=[g.user], slug=self.generate_slug(64), tagroup=tagroup
         )
         db.session.add(new_dashboard)
         db.session.commit()
-        return redirect(f"/superset/dashboard/{new_dashboard.id}/?edit=true")
+        return redirect(f"/superset/dashboard/{new_dashboard.slug}/?edit=true")
 
 
 class DashboardModelViewAsync(DashboardModelView):  # pylint: disable=too-many-ancestors

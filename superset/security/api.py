@@ -97,6 +97,15 @@ class SecurityRestApi(BaseApi):
       sm.get_session.commit()
 
 
+    @expose("/test_this_user/", methods=["GET"])
+    @event_logger.log_this
+    @protect()
+    @safe
+    @permission_name("read")
+    def ta_test_this_user(self) -> Response:
+        return self.response(200, result=(g.user))
+
+
     @expose("/create_ta_user/", methods=["POST"])
     @event_logger.log_this
     @protect()
@@ -140,7 +149,7 @@ class SecurityRestApi(BaseApi):
         if role is None:
           datasourceIds = data['datasourceIds'].split(',')
           datasourceNames = data['datasourceNames'].split(',')
-          isUser = data['type'] = 'user'
+          isUser = data['type'] == 'user'
           self.create_role(role_name, datasourceIds, datasourceNames, isUser)
         
         role_names = [role_name]
@@ -150,8 +159,7 @@ class SecurityRestApi(BaseApi):
         user = sm.add_user(data['username'], 'DS2G', "User", data['email'], list(map(lambda rn:sm.find_role(rn), role_names)), password=data['password'])
 
         tagroup = 0
-        # TODO check if undefined is sent for main accounts
-        if 'mainUserUsername' in data:
+        if 'mainUserUsername' in data and data['mainUserUsername'] is not None:
           main_user_id = db.session.query(User.id).filter_by(username=data['mainUserUsername']).first()
           main_user_id = main_user_id[0]
           tagroup = db.session.query(UserTAGroup.tagroup).filter_by(user_id=main_user_id).first()

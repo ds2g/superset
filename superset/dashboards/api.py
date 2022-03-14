@@ -15,6 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 import json
+import string
+import random
 import logging
 from datetime import datetime
 from io import BytesIO

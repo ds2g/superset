@@ -14,14 +14,17 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+from __future__ import annotations
 
 import copy
 import logging
-from typing import Any, cast, Dict, Optional
+from typing import Any, cast, Dict, Optional, TYPE_CHECKING
 
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app, g
+from marshmallow import ValidationError
 
+from superset.charts.schemas import ChartDataQueryContextSchema
 from superset.exceptions import SupersetVizException
 from superset.extensions import (
     async_query_manager,
@@ -31,6 +34,9 @@ from superset.extensions import (
 )
 from superset.utils.cache import generate_cache_key, set_and_log_cache
 from superset.views.utils import get_datasource_info, get_viz
+
+if TYPE_CHECKING:
+    from superset.common.query_context import QueryContext
 
 logger = logging.getLogger(__name__)
 query_timeout = current_app.config[
@@ -50,23 +56,35 @@ def set_form_data(form_data: Dict[str, Any]) -> None:
     g.form_data = form_data
 
 
+def _create_query_context_from_form(form_data: Dict[str, Any]) -> QueryContext:
+    try:
+        return ChartDataQueryContextSchema().load(form_data)
+    except KeyError as ex:
+        raise ValidationError("Request is incorrect") from ex
+    except ValidationError as error:
+        raise error
+
+
 @celery_app.task(name="load_chart_data_into_cache", soft_time_limit=query_timeout)
 def load_chart_data_into_cache(
-    job_metadata: Dict[str, Any], form_data: Dict[str, Any],
+    job_metadata: Dict[str, Any],
+    form_data: Dict[str, Any],
 ) -> None:
     # pylint: disable=import-outside-toplevel
-    from superset.charts.commands.data import ChartDataCommand
+    from superset.charts.data.commands.get_data_command import ChartDataCommand
 
     try:
         ensure_user_is_set(job_metadata.get("user_id"))
         set_form_data(form_data)
-        command = ChartDataCommand()
-        command.set_query_context(form_data)
+        query_context = _create_query_context_from_form(form_data)
+        command = ChartDataCommand(query_context)
         result = command.run(cache=True)
         cache_key = result["cache_key"]
         result_url = f"/api/v1/chart/data/{cache_key}"
         async_query_manager.update_job(
-            job_metadata, async_query_manager.STATUS_DONE, result_url=result_url,
+            job_metadata,
+            async_query_manager.STATUS_DONE,
+            result_url=result_url,
         )
     except SoftTimeLimitExceeded as ex:
         logger.warning("A timeout occurred while loading chart data, error: %s", ex)
@@ -121,7 +139,9 @@ def load_explore_json_into_cache(  # pylint: disable=too-many-locals
         set_and_log_cache(cache_manager.cache, cache_key, cache_value)
         result_url = f"/superset/explore_json/data/{cache_key}"
         async_query_manager.update_job(
-            job_metadata, async_query_manager.STATUS_DONE, result_url=result_url,
+            job_metadata,
+            async_query_manager.STATUS_DONE,
+            result_url=result_url,
         )
     except SoftTimeLimitExceeded as ex:
         logger.warning("A timeout occurred while loading explore json, error: %s", ex)

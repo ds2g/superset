@@ -44,6 +44,7 @@ import Timer from 'src/components/Timer';
 import CachedLabel from 'src/components/CachedLabel';
 import PropertiesModal from 'src/explore/components/PropertiesModal';
 import { sliceUpdated } from 'src/explore/actions/exploreActions';
+import CertifiedBadge from 'src/components/CertifiedBadge';
 import ExploreActionButtons from '../ExploreActionButtons';
 import RowCountLabel from '../RowCountLabel';
 
@@ -55,7 +56,6 @@ const CHART_STATUS_MAP = {
 
 const propTypes = {
   actions: PropTypes.object.isRequired,
-  addHistory: PropTypes.func,
   can_overwrite: PropTypes.bool.isRequired,
   can_download: PropTypes.bool.isRequired,
   dashboardId: PropTypes.number,
@@ -142,30 +142,49 @@ export class ExploreChartHeader extends React.PureComponent {
 
   async fetchChartDashboardData() {
     const { dashboardId, slice } = this.props;
-    const response = await SupersetClient.get({
+    await SupersetClient.get({
       endpoint: `/api/v1/chart/${slice.slice_id}`,
-    });
-    const chart = response.json.result;
-    const dashboards = chart.dashboards || [];
-    const dashboard =
-      dashboardId &&
-      dashboards.length &&
-      dashboards.find(d => d.id === dashboardId);
+    })
+      .then(res => {
+        const response = res?.json?.result;
+        if (response && response.dashboards && response.dashboards.length) {
+          const { dashboards } = response;
+          const dashboard =
+            dashboardId &&
+            dashboards.length &&
+            dashboards.find(d => d.id === dashboardId);
 
-    if (dashboard && dashboard.json_metadata) {
-      // setting the chart to use the dashboard custom label colors if any
-      const labelColors =
-        JSON.parse(dashboard.json_metadata).label_colors || {};
-      const categoricalNamespace = CategoricalColorNamespace.getNamespace();
+          if (dashboard && dashboard.json_metadata) {
+            // setting the chart to use the dashboard custom label colors if any
+            const metadata = JSON.parse(dashboard.json_metadata);
+            const sharedLabelColors = metadata.shared_label_colors || {};
+            const customLabelColors = metadata.label_colors || {};
+            const mergedLabelColors = {
+              ...sharedLabelColors,
+              ...customLabelColors,
+            };
 
-      Object.keys(labelColors).forEach(label => {
-        categoricalNamespace.setColor(label, labelColors[label]);
-      });
-    }
+            const categoricalNamespace =
+              CategoricalColorNamespace.getNamespace();
+
+            Object.keys(mergedLabelColors).forEach(label => {
+              categoricalNamespace.setColor(
+                label,
+                mergedLabelColors[label],
+                metadata.color_scheme,
+              );
+            });
+          }
+        }
+      })
+      .catch(() => {});
   }
 
   getSliceName() {
-    return this.props.sliceName || t('%s - untitled', this.props.table_name);
+    const { sliceName, table_name: tableName } = this.props;
+    const title = sliceName || t('%s - untitled', tableName);
+
+    return title;
   }
 
   postChartFormData() {
@@ -227,7 +246,7 @@ export class ExploreChartHeader extends React.PureComponent {
       return false;
     }
     const { user } = this.props;
-    if (!user) {
+    if (!user?.userId) {
       // this is in the case that there is an anonymous user.
       return false;
     }
@@ -241,7 +260,7 @@ export class ExploreChartHeader extends React.PureComponent {
   }
 
   render() {
-    const { user, form_data: formData } = this.props;
+    const { user, form_data: formData, slice } = this.props;
     const {
       chartStatus,
       chartUpdateEndTime,
@@ -257,6 +276,14 @@ export class ExploreChartHeader extends React.PureComponent {
     return (
       <StyledHeader id="slice-header" className="panel-title-large">
         <div className="title-panel">
+          {slice?.certified_by && (
+            <>
+              <CertifiedBadge
+                certifiedBy={slice.certified_by}
+                details={slice.certification_details}
+              />{' '}
+            </>
+          )}
           <EditableTitle
             title={this.getSliceName()}
             canEdit={

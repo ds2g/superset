@@ -165,6 +165,7 @@ class SecurityRestApi(BaseApi):
           tagroup = db.session.query(UserTAGroup.tagroup).filter_by(user_id=main_user_id).first()
           tagroup = tagroup[0]
         else:
+          # TODO auto increment?
           tagroup = db.session.query(UserTAGroup.tagroup).order_by(UserTAGroup.tagroup.desc()).first()
           tagroup = tagroup[0]
           tagroup += 1

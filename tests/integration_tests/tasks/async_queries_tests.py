@@ -22,10 +22,8 @@ import pytest
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import g
 
-from superset import db
-from superset.charts.commands.data import ChartDataCommand
 from superset.charts.commands.exceptions import ChartDataQueryFailedError
-from superset.connectors.sqla.models import SqlaTable
+from superset.charts.data.commands.get_data_command import ChartDataCommand
 from superset.exceptions import SupersetException
 from superset.extensions import async_query_manager, security_manager
 from superset.tasks import async_queries
@@ -37,6 +35,7 @@ from superset.tasks.async_queries import (
 from tests.integration_tests.base_tests import SupersetTestCase
 from tests.integration_tests.fixtures.birth_names_dashboard import (
     load_birth_names_dashboard_with_slices,
+    load_birth_names_data,
 )
 from tests.integration_tests.fixtures.query_context import get_query_context
 from tests.integration_tests.test_app import app
@@ -114,7 +113,8 @@ class TestAsyncQueries(SupersetTestCase):
 
         with pytest.raises(SoftTimeLimitExceeded):
             with mock.patch.object(
-                async_queries, "ensure_user_is_set",
+                async_queries,
+                "ensure_user_is_set",
             ) as ensure_user_is_set:
                 ensure_user_is_set.side_effect = SoftTimeLimitExceeded()
                 load_chart_data_into_cache(job_metadata, form_data)
@@ -201,7 +201,8 @@ class TestAsyncQueries(SupersetTestCase):
 
         with pytest.raises(SoftTimeLimitExceeded):
             with mock.patch.object(
-                async_queries, "ensure_user_is_set",
+                async_queries,
+                "ensure_user_is_set",
             ) as ensure_user_is_set:
                 ensure_user_is_set.side_effect = SoftTimeLimitExceeded()
                 load_explore_json_into_cache(job_metadata, form_data)

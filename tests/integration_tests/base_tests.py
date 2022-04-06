@@ -45,7 +45,8 @@ from superset.models.slice import Slice
 from superset.models.core import Database
 from superset.models.dashboard import Dashboard
 from superset.models.datasource_access_request import DatasourceAccessRequest
-from superset.utils.core import get_example_database, get_example_default_schema
+from superset.utils.core import get_example_default_schema
+from superset.utils.database import get_example_database
 from superset.views.base_api import BaseSupersetModelRestApi
 
 FAKE_DB_NAME = "fake_db_100"
@@ -458,6 +459,7 @@ class SupersetTestCase(TestCase):
         user_name=None,
         raise_on_error=False,
         database_name="examples",
+        template_params=None,
     ):
         if user_name:
             self.logout()
@@ -466,7 +468,12 @@ class SupersetTestCase(TestCase):
         resp = self.get_json_resp(
             "/superset/validate_sql_json/",
             raise_on_error=False,
-            data=dict(database_id=dbid, sql=sql, client_id=client_id),
+            data=dict(
+                database_id=dbid,
+                sql=sql,
+                client_id=client_id,
+                templateParams=template_params,
+            ),
         )
         if raise_on_error and "error" in resp:
             raise Exception("validate_sql failed")

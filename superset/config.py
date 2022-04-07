@@ -217,7 +217,8 @@ WTF_CSRF_EXEMPT_LIST = [
     "superset.datasets.api.post",
     "superset.datasets.api.put",
     "superset.charts.api.post",
-    "superset.dashboards.api.post"
+    "superset.dashboards.api.post",
+    "superset.databases.api.post"
 ]
 
 # Whether to run the web server in debug mode or not

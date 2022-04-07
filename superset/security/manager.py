@@ -701,6 +701,10 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
             )
             self.copy_role("Gamma", self.auth_role_public, merge=True)
 
+        for perm in self.find_role('Gamma').permissions:
+            if 'write' not in str(perm):
+                self.add_permission_role(self.find_role('Public'), perm)
+
         self.create_missing_perms()
 
         # commit role and view menu updates

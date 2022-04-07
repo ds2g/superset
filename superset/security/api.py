@@ -360,4 +360,3 @@ class SecurityRestApi(BaseApi):
         sm.get_session.merge(role)
         sm.get_session.commit()
         return self.response(200)
-        Return the csrf token

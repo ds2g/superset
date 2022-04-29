@@ -178,9 +178,9 @@ export function Menu({
   const [showMenu, setMenu] = useState<MenuMode>('horizontal');
   const screens = useBreakpoint();
 
-  /* navbarRight.user_logout_url = 'https://dataplatform.ds2g.io/api/logout';
-  navbarRight.user_login_url = 'https://dataplatform.ds2g.io'; */
-  const brand_path = 'https://dataplatform.ds2g.io/dashboard';
+  /* navbarRight.user_logout_url = 'https://data.ds2g.io/api/logout';
+  navbarRight.user_login_url = 'https://data.ds2g.io'; */
+  const brand_path = 'https://data.ds2g.io/dashboard';
 
   useEffect(() => {
     function handleResize() {

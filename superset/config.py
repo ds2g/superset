@@ -284,10 +284,10 @@ OAUTH_PROVIDERS = [
                 'scope': 'openid profile email',        # Scope for the Authorization
                                                                                                 },
             'access_token_method':'POST',    # HTTP Method to call access_token_url
-            'base_url':'https://dataplatform.ds2g.io',
-            'access_token_url':'https://dataplatform.ds2g.io/api/oauth2/token',
-            'authorize_url':'https://dataplatform.ds2g.io/api/oauth2/authorize',
-            'logout_redirect_uri': 'https://dataplatform.ds2g.io/api/logout'
+            'base_url':'https://data.ds2g.io',
+            'access_token_url':'https://data.ds2g.io/api/oauth2/token',
+            'authorize_url':'https://data.ds2g.io/api/oauth2/authorize',
+            'logout_redirect_uri': 'https://data.ds2g.io/api/logout'
         },
     }
 ]

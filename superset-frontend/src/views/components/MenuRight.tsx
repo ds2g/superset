@@ -20,10 +20,7 @@ import React from 'react';
 import { MainNav as Menu } from 'src/components/Menu';
 import { t, styled /* , css, SupersetTheme */ } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
-
-import {
-  RightMenuProps,
-} from './types';
+import { RightMenuProps } from './types';
 
 export const dropdownItems = [
   {

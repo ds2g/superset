@@ -17,7 +17,7 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import { styled, css, /* useTheme, SupersetTheme */ } from '@superset-ui/core';
+import { styled, css } from '@superset-ui/core'; /* useTheme, SupersetTheme */
 import { debounce } from 'lodash';
 import { Global } from '@emotion/react';
 import { getUrlParam } from 'src/utils/urlUtils';
@@ -198,7 +198,7 @@ export function Menu({
   const [showMenu, setMenu] = useState<MenuMode>('horizontal');
   const screens = useBreakpoint();
   const uiConfig = useUiConfig();
-  //const theme = useTheme();
+  // const theme = useTheme();
 
   /* navbarRight.user_logout_url = 'https://data.ds2g.io/api/logout';
   navbarRight.user_login_url = 'https://data.ds2g.io'; */

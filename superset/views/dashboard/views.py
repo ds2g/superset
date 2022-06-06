@@ -32,7 +32,7 @@ from superset import db, event_logger, is_feature_enabled, security_manager
 from superset.constants import MODEL_VIEW_RW_METHOD_PERMISSION_MAP, RouteMethod
 from superset.models.dashboard import Dashboard as DashboardModel
 from superset.models.user_tagroup import UserTAGroup
-from superset.typing import FlaskResponse
+from superset.superset_typing import FlaskResponse
 from superset.utils import core as utils
 from superset.views.base import (
     BaseSupersetView,

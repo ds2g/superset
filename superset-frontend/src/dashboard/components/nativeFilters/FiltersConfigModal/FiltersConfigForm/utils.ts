@@ -80,7 +80,7 @@ type DatasetSelectValue = {
 };
 
 export const datasetToSelectOption = (
-  item: DatasourceMeta & { table_name: string },
+  item: DatasourceMeta & { table_name: string, custom_label: string },
 ): DatasetSelectValue => ({
   value: item.id,
   label: item.custom_label || item.table_name,

@@ -17,11 +17,11 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import { styled, css, useTheme, SupersetTheme } from '@superset-ui/core';
+import { styled, css, /* useTheme, SupersetTheme */ } from '@superset-ui/core';
 import { debounce } from 'lodash';
 import { Global } from '@emotion/react';
 import { getUrlParam } from 'src/utils/urlUtils';
-import { Row, Col, Grid } from 'src/components';
+// import { Row, Col, Grid } from 'src/components';
 import { MainNav as DropdownMenu, MenuMode } from 'src/components/Menu';
 import { Tooltip } from 'src/components/Tooltip';
 import { Link, useLocation } from 'react-router-dom';
@@ -170,6 +170,7 @@ const StyledHeader = styled.header`
     }
   }
 `;
+/*
 const globalStyles = (theme: SupersetTheme) => css`
   .ant-menu-submenu.ant-menu-submenu-popup.ant-menu.ant-menu-light.ant-menu-submenu-placement-bottomLeft {
     border-radius: 0px;
@@ -185,6 +186,7 @@ const globalStyles = (theme: SupersetTheme) => css`
     }
   }
 `;
+*/
 const { SubMenu } = DropdownMenu;
 
 const { useBreakpoint } = Grid;
@@ -196,7 +198,7 @@ export function Menu({
   const [showMenu, setMenu] = useState<MenuMode>('horizontal');
   const screens = useBreakpoint();
   const uiConfig = useUiConfig();
-  const theme = useTheme();
+  //const theme = useTheme();
 
   /* navbarRight.user_logout_url = 'https://data.ds2g.io/api/logout';
   navbarRight.user_login_url = 'https://data.ds2g.io'; */

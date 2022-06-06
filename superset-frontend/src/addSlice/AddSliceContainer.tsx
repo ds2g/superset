@@ -31,7 +31,7 @@ import VizTypeGallery, {
 type Dataset = {
   id: number;
   table_name: string;
-  custom_label: string,
+  custom_label: string;
   description: string;
   datasource_type: string;
 };

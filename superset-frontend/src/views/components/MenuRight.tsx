@@ -16,12 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { Fragment, useState } from 'react';
+import React from 'react';
 import { MainNav as Menu } from 'src/components/Menu';
 import { t, styled /* , css, SupersetTheme */ } from '@superset-ui/core';
-import { Link } from 'react-router-dom';
 import Icons from 'src/components/Icons';
-import { NavBarProps, MenuObjectProps } from './Menu';
+
+import {
+  RightMenuProps,
+} from './types';
 
 export const dropdownItems = [
   {

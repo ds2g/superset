@@ -19,14 +19,13 @@ import string
 import random
 from typing import Optional
 
-from flask import flash, request, Response
+from flask import flash
 from flask_appbuilder import expose
-from flask_appbuilder.security.decorators import has_access_api
 from werkzeug.utils import redirect
 
 from superset import db, event_logger
 from superset.models import core as models
-from superset.typing import FlaskResponse
+from superset.superset_typing import FlaskResponse
 from superset.views.base import BaseSupersetView
 
 logger = logging.getLogger(__name__)

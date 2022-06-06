@@ -30,7 +30,7 @@ import React, {
   Reducer,
 } from 'react';
 import Tabs from 'src/components/Tabs';
-import { Select } from 'src/common/components';
+import { AntdSelect } from 'src/components';
 import Alert from 'src/components/Alert';
 import Modal from 'src/components/Modal';
 import Button from 'src/components/Button';
@@ -90,38 +90,42 @@ const engineSpecificAlertMapping = {
 
 const errorAlertMapping = {
   CONNECTION_MISSING_PARAMETERS_ERROR: {
-    message: 'Missing Required Fields',
-    description: 'Please complete all required fields.',
+    message: t('Missing Required Fields'),
+    description: t('Please complete all required fields.'),
   },
   CONNECTION_INVALID_HOSTNAME_ERROR: {
-    message: 'Could not verify the host',
-    description:
+    message: t('Could not verify the host'),
+    description: t(
       'The host is invalid. Please verify that this field is entered correctly.',
+    ),
   },
   CONNECTION_PORT_CLOSED_ERROR: {
-    message: 'Port is closed',
-    description: 'Please verify that port is open to connect.',
+    message: t('Port is closed'),
+    description: t('Please verify that port is open to connect.'),
   },
   CONNECTION_INVALID_PORT_ERROR: {
-    message: 'Invalid Port Number',
-    description: 'The port must be a whole number less than or equal to 65535.',
+    message: t('Invalid Port Number'),
+    description: t(
+      'The port must be a whole number less than or equal to 65535.',
+    ),
   },
   CONNECTION_ACCESS_DENIED_ERROR: {
-    message: 'Invalid account information',
-    description: 'Either the username or password is incorrect.',
+    message: t('Invalid account information'),
+    description: t('Either the username or password is incorrect.'),
   },
   CONNECTION_INVALID_PASSWORD_ERROR: {
-    message: 'Invalid account information',
-    description: 'Either the username or password is incorrect.',
+    message: t('Invalid account information'),
+    description: t('Either the username or password is incorrect.'),
   },
   INVALID_PAYLOAD_SCHEMA_ERROR: {
-    message: 'Incorrect Fields',
-    description: 'Please make sure all fields are filled out correctly',
+    message: t('Incorrect Fields'),
+    description: t('Please make sure all fields are filled out correctly'),
   },
   TABLE_DOES_NOT_EXIST_ERROR: {
-    message: 'URL could not be identified',
-    description:
+    message: t('URL could not be identified'),
+    description: t(
       'The URL could not be identified. Please check for typos and make sure that "Type of google sheet allowed" selection matches the input',
+    ),
   },
 };
 interface DatabaseModalProps {
@@ -131,6 +135,7 @@ interface DatabaseModalProps {
   onHide: () => void;
   show: boolean;
   databaseId: number | undefined; // If included, will go into edit mode
+  dbEngine: string | undefined; // if included goto step 2 with engine already set
 }
 
 enum ActionType {
@@ -209,7 +214,7 @@ function dbReducer(
   };
   let query = {};
   let query_input = '';
-  let deserializeExtraJSON = {};
+  let deserializeExtraJSON = { allows_virtual_table_explore: true };
   let extra_json: DatabaseObject['extra_json'];
 
   switch (action.type) {
@@ -343,6 +348,7 @@ function dbReducer(
         } as DatabaseObject['extra_json'];
 
         deserializeExtraJSON = {
+          ...deserializeExtraJSON,
           ...JSON.parse(action.payload.extra || ''),
           metadata_params: JSON.stringify(extra_json?.metadata_params),
           engine_params: JSON.stringify(extra_json?.engine_params),
@@ -410,7 +416,7 @@ const serializeExtra = (extraJson: DatabaseObject['extra_json']) =>
     ...extraJson,
     metadata_params: JSON.parse((extraJson?.metadata_params as string) || '{}'),
     engine_params: JSON.parse(
-      ((extraJson?.engine_params as unknown) as string) || '{}',
+      (extraJson?.engine_params as unknown as string) || '{}',
     ),
     schemas_allowed_for_file_upload: (
       extraJson?.schemas_allowed_for_file_upload || []
@@ -424,21 +430,20 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
   onHide,
   show,
   databaseId,
+  dbEngine,
 }) => {
   const [db, setDB] = useReducer<
     Reducer<Partial<DatabaseObject> | null, DBReducerActionType>
   >(dbReducer, null);
   const [tabKey, setTabKey] = useState<string>(DEFAULT_TAB_KEY);
   const [availableDbs, getAvailableDbs] = useAvailableDatabases();
-  const [
-    validationErrors,
-    getValidation,
-    setValidationErrors,
-  ] = useDatabaseValidation();
+  const [validationErrors, getValidation, setValidationErrors] =
+    useDatabaseValidation();
   const [hasConnectedDb, setHasConnectedDb] = useState<boolean>(false);
   const [dbName, setDbName] = useState('');
   const [editNewDb, setEditNewDb] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [testInProgress, setTestInProgress] = useState<boolean>(false);
   const conf = useCommonConf();
   const dbImages = getDatabaseImages();
   const connectionAlert = getConnectionAlert();
@@ -493,7 +498,18 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       encrypted_extra: db?.encrypted_extra || '',
       server_cert: db?.server_cert || undefined,
     };
-    testDatabaseConnection(connection, addDangerToast, addSuccessToast);
+    setTestInProgress(true);
+    testDatabaseConnection(
+      connection,
+      (errorMsg: string) => {
+        setTestInProgress(false);
+        addDangerToast(errorMsg);
+      },
+      (errorMsg: string) => {
+        setTestInProgress(false);
+        addSuccessToast(errorMsg);
+      },
+    );
   };
 
   const onClose = () => {
@@ -584,6 +600,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
         }
         if (!editNewDb) {
           onClose();
+          addSuccessToast(t('Database settings updated'));
         }
       }
     } else if (db) {
@@ -602,6 +619,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
           // tab layout only has one step
           // so it should close immediately on save
           onClose();
+          addSuccessToast(t('Database connected'));
         }
       }
     }
@@ -664,28 +682,29 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
   const renderAvailableSelector = () => (
     <div className="available">
       <h4 className="available-label">
-        Or choose from a list of other databases we support:
+        {t('Or choose from a list of other databases we support:')}
       </h4>
-      <div className="control-label">Supported databases</div>
-      <Select
+      <div className="control-label">{t('Supported databases')}</div>
+      <AntdSelect
         className="available-select"
         onChange={setDatabaseModel}
-        placeholder="Choose a database..."
+        placeholder={t('Choose a database...')}
+        showSearch
       >
         {[...(availableDbs?.databases || [])]
           ?.sort((a: DatabaseForm, b: DatabaseForm) =>
             a.name.localeCompare(b.name),
           )
           .map((database: DatabaseForm) => (
-            <Select.Option value={database.name} key={database.name}>
+            <AntdSelect.Option value={database.name} key={database.name}>
               {database.name}
-            </Select.Option>
+            </AntdSelect.Option>
           ))}
         {/* Allow users to connect to DB via legacy SQLA form */}
-        <Select.Option value="Other" key="Other">
-          Other
-        </Select.Option>
-      </Select>
+        <AntdSelect.Option value="Other" key="Other">
+          {t('Other')}
+        </AntdSelect.Option>
+      </AntdSelect>
       <Alert
         showIcon
         closable={false}
@@ -698,8 +717,9 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
         description={
           connectionAlert?.ADD_DATABASE ? (
             <>
-              Any databases that allow connections via SQL Alchemy URIs can be
-              added.{' '}
+              {t(
+                'Any databases that allow connections via SQL Alchemy URIs can be added. ',
+              )}
               <a
                 href={connectionAlert?.ADD_DATABASE.contact_link}
                 target="_blank"
@@ -711,14 +731,15 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
             </>
           ) : (
             <>
-              Any databases that allow connections via SQL Alchemy URIs can be
-              added. Learn about how to connect a database driver{' '}
+              {t(
+                'Any databases that allow connections via SQL Alchemy URIs can be added. Learn about how to connect a database driver ',
+              )}
               <a
                 href={DOCUMENTATION_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                here
+                {t('here')}
               </a>
               .
             </>
@@ -764,14 +785,14 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
         return (
           <>
             <StyledFooterButton key="back" onClick={handleBackButtonOnConnect}>
-              Back
+              {t('Back')}
             </StyledFooterButton>
             <StyledFooterButton
               key="submit"
               buttonStyle="primary"
               onClick={onSave}
             >
-              Connect
+              {t('Connect')}
             </StyledFooterButton>
           </>
         );
@@ -780,7 +801,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       return (
         <>
           <StyledFooterButton key="back" onClick={handleBackButtonOnFinish}>
-            Back
+            {t('Back')}
           </StyledFooterButton>
           <StyledFooterButton
             key="submit"
@@ -788,7 +809,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
             onClick={onSave}
             data-test="modal-confirm-button"
           >
-            Finish
+            {t('Finish')}
           </StyledFooterButton>
         </>
       );
@@ -796,13 +817,25 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
     return [];
   };
 
-  const renderEditModalFooter = () => (
+  const renderEditModalFooter = (db: Partial<DatabaseObject> | null) => (
     <>
       <StyledFooterButton key="close" onClick={onClose}>
-        Close
+        {t('Close')}
       </StyledFooterButton>
-      <StyledFooterButton key="submit" buttonStyle="primary" onClick={onSave}>
-        Finish
+      <StyledFooterButton
+        key="submit"
+        buttonStyle="primary"
+        onClick={onSave}
+        disabled={db?.is_managed_externally}
+        tooltip={
+          db?.is_managed_externally
+            ? t(
+                "This database is managed externally, and can't be edited in Superset",
+              )
+            : ''
+        }
+      >
+        {t('Finish')}
       </StyledFooterButton>
     </>
   );
@@ -832,6 +865,11 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
   useEffect(() => {
     if (isLoading) {
       setLoading(false);
+    }
+
+    if (availableDbs && dbEngine) {
+      // set model if passed into props
+      setDatabaseModel(dbEngine);
     }
   }, [availableDbs]);
 
@@ -904,7 +942,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       <Alert
         type="error"
         css={(theme: SupersetTheme) => antDErrorAlertStyles(theme)}
-        message="Database Creation Error"
+        message={t('Database Creation Error')}
         description={message?.[0] || dbErrors}
       />
     );
@@ -1007,7 +1045,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       title={
         <h4>{isEditMode ? t('Edit database') : t('Connect a database')}</h4>
       }
-      footer={isEditMode ? renderEditModalFooter() : renderModalFooter()}
+      footer={isEditMode ? renderEditModalFooter(db) : renderModalFooter()}
     >
       <StyledStickyHeader>
         <TabHeader>
@@ -1044,6 +1082,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
                 conf={conf}
                 testConnection={testConnection}
                 isEditMode={isEditMode}
+                testInProgress={testInProgress}
               />
               {isDynamic(db?.backend || db?.engine) && !isEditMode && (
                 <div css={(theme: SupersetTheme) => infoTooltip(theme)}>
@@ -1062,7 +1101,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
                     }
                     css={theme => alchemyButtonLinkStyles(theme)}
                   >
-                    Connect this database using the dynamic form instead
+                    {t('Connect this database using the dynamic form instead')}
                   </Button>
                   <InfoTooltip
                     tooltip={t(
@@ -1121,16 +1160,16 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
                 showIcon
                 description={
                   <>
-                    Select databases require additional fields to be completed
-                    in the Advanced tab to successfully connect the database.
-                    Learn what requirements your databases has{' '}
+                    {t(
+                      'Select databases require additional fields to be completed in the Advanced tab to successfully connect the database. Learn what requirements your databases has ',
+                    )}
                     <a
                       href={DOCUMENTATION_LINK}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="additional-fields-alert-description"
                     >
-                      here
+                      {t('here')}
                     </a>
                     .
                   </>
@@ -1295,7 +1334,9 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
                     }
                     css={buttonLinkStyles}
                   >
-                    Connect this database with a SQLAlchemy URI string instead
+                    {t(
+                      'Connect this database with a SQLAlchemy URI string instead',
+                    )}
                   </Button>
                   <InfoTooltip
                     tooltip={t(

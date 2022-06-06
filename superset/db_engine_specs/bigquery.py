@@ -72,7 +72,8 @@ ma_plugin = MarshmallowPlugin()
 
 class BigQueryParametersSchema(Schema):
     credentials_info = EncryptedString(
-        required=False, description="Contents of BigQuery JSON credentials.",
+        required=False,
+        description="Contents of BigQuery JSON credentials.",
     )
     query = fields.Dict(required=False)
 
@@ -139,6 +140,7 @@ class BigQueryEngineSpec(BaseEngineSpec):
         "PT1H": "{func}({col}, HOUR)",
         "P1D": "{func}({col}, DAY)",
         "P1W": "{func}({col}, WEEK)",
+        "1969-12-29T00:00:00Z/P1W": "{func}({col}, ISOWEEK)",
         "P1M": "{func}({col}, MONTH)",
         "P3M": "{func}({col}, QUARTER)",
         "P1Y": "{func}({col}, YEAR)",
@@ -186,7 +188,9 @@ class BigQueryEngineSpec(BaseEngineSpec):
     }
 
     @classmethod
-    def convert_dttm(cls, target_type: str, dttm: datetime) -> Optional[str]:
+    def convert_dttm(
+        cls, target_type: str, dttm: datetime, db_extra: Optional[Dict[str, Any]] = None
+    ) -> Optional[str]:
         tt = target_type.upper()
         if tt == utils.TemporalType.DATE:
             return f"CAST('{dttm.date().isoformat()}' AS DATE)"

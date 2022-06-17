@@ -297,8 +297,11 @@ class SecurityRestApi(BaseApi):
 
         if user is not None:
           try:
+            logger.info('starting -------------------')
             sm.get_session.execute(dashboard_user.delete().where(dashboard_user.c.user_id == user.id))
+            logger.info('deleted dashboard_user -------------------')
             sm.get_session.delete(user)
+            logger.info('deleted user -------------------')
             sm.get_session.commit()
           except SQLAlchemyError as ex:  # pragma: no cover
             sm.get_session.rollback()

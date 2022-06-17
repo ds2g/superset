@@ -31,7 +31,13 @@ from superset import security_manager as sm, db
 from superset.extensions import event_logger
 from superset.security.guest_token import GuestTokenResourceType
 from superset.models.user_tagroup import UserTAGroup
-from superset.models.dashboard import dashboard_user
+from superset.models.slice import slice_user
+from superset.models.dashboard import (
+    Dashboard,
+    dashboard_slices,
+    dashboard_user,
+    DashboardRoles,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -297,15 +303,21 @@ class SecurityRestApi(BaseApi):
 
         if user is not None:
           try:
-            logger.info('starting -------------------')
+            dashboards = db.session.query(Dashboard).filter_by(created_by_fk=user.id)
+            for dashboard in dashboards:
+              sm.get_session.execute(DashboardRoles.delete().where(DashboardRoles.c.dashboard_id == dashboard.id))
+              sm.get_session.execute(dashboard_user.delete().where(dashboard_user.c.dashboard_id == dashboard.id))
+              sm.get_session.execute(dashboard_slices.delete().where(dashboard_slices.c.dashboard_id == dashboard.id))
+              sm.get_session.delete(dashboard)
+            
+            
             sm.get_session.execute(dashboard_user.delete().where(dashboard_user.c.user_id == user.id))
-            logger.info('deleted dashboard_user -------------------')
+            sm.get_session.execute(slice_user.delete().where(slice_user.c.user_id == user.id))
             sm.get_session.delete(user)
-            logger.info('deleted user -------------------')
             sm.get_session.commit()
           except SQLAlchemyError as ex:  # pragma: no cover
             sm.get_session.rollback()
-            raise DAODeleteFailedError(exception=ex)
+            #raise DAODeleteFailedError(exception=ex)
 
         return self.response(200)
 

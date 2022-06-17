@@ -297,7 +297,7 @@ class SecurityRestApi(BaseApi):
 
         if user is not None:
           try:
-            dashboard_user.delete().where(dashboard_user.c.user_id == user.id)
+            sm.get_session.execute(dashboard_user.delete().where(dashboard_user.c.user_id == user.id))
             sm.get_session.delete(user)
             sm.get_session.commit()
           except SQLAlchemyError as ex:  # pragma: no cover

@@ -31,6 +31,7 @@ from superset import security_manager as sm, db
 from superset.extensions import event_logger
 from superset.security.guest_token import GuestTokenResourceType
 from superset.models.user_tagroup import UserTAGroup
+from superset.models.dashboard import dashboard_user
 
 logger = logging.getLogger(__name__)
 
@@ -296,6 +297,7 @@ class SecurityRestApi(BaseApi):
 
         if user is not None:
           try:
+            dashboard_user.delete().where(dashboard_user.c.user_id == user.id)
             sm.get_session.delete(user)
             sm.get_session.commit()
           except SQLAlchemyError as ex:  # pragma: no cover

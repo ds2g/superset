@@ -31,7 +31,7 @@ from superset import security_manager as sm, db
 from superset.extensions import event_logger
 from superset.security.guest_token import GuestTokenResourceType
 from superset.models.user_tagroup import UserTAGroup
-from superset.models.slice import slice_user
+from superset.models.slice import Slice, slice_user
 from superset.models.dashboard import (
     Dashboard,
     dashboard_slices,
@@ -309,6 +309,11 @@ class SecurityRestApi(BaseApi):
               sm.get_session.execute(dashboard_user.delete().where(dashboard_user.c.dashboard_id == dashboard.id))
               sm.get_session.execute(dashboard_slices.delete().where(dashboard_slices.c.dashboard_id == dashboard.id))
               sm.get_session.delete(dashboard)
+
+            slices = db.session.query(Slice).filter_by(created_by_fk=user.id)
+            for s in slices:
+              sm.get_session.execute(slice_user.delete().where(slice_user.c.slice_id == s.id))
+              sm.get_session.delete(s)
             
             
             sm.get_session.execute(dashboard_user.delete().where(dashboard_user.c.user_id == user.id))

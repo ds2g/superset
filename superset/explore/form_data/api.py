@@ -55,7 +55,6 @@ class ExploreFormDataRestApi(BaseApi, ABC):
     openapi_spec_component_schemas = (FormDataPostSchema, FormDataPutSchema)
 
     @expose("/form_data", methods=["POST"])
-    @protect()
     @safe
     @event_logger.log_this_with_context(
         action=lambda self, *args, **kwargs: f"{self.__class__.__name__}.post",

@@ -67,7 +67,7 @@ function ChartTable({
   /* const history = useHistory(); */
   const filterStore = getItem(
     LocalStorageKeys.homepage_chart_filter,
-    TableTabTypes.EXAMPLES,
+    TableTabTypes.MINE,
   );
   const initialFilter = filterStore;
 

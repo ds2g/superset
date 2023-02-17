@@ -92,12 +92,6 @@ const RightMenu = ({
         ]}
       </SubMenu>
     </Menu>
-    {navbarRight.user_is_anonymous && (
-      <StyledAnchor href={navbarRight.user_login_url}>
-        <i className="fa fa-fw fa-sign-in" />
-        {t('Login')}
-      </StyledAnchor>
-    )}
   </StyledDiv>
 );
 export default RightMenu;

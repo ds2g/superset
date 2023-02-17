@@ -66,11 +66,6 @@ const StyledDiv = styled.div<{ align: string }>`
   }
 `;
 
-const StyledAnchor = styled.a`
-  padding-right: ${({ theme }) => theme.gridUnit}px;
-  padding-left: ${({ theme }) => theme.gridUnit}px;
-`;
-
 const { SubMenu } = Menu;
 
 const RightMenu = ({

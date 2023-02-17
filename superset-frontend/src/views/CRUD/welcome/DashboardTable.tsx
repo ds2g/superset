@@ -63,7 +63,7 @@ function DashboardTable({
   /* const history = useHistory(); */
   const filterStore = getItem(
     LocalStorageKeys.homepage_dashboard_filter,
-    TableTabTypes.EXAMPLES,
+    TableTabTypes.MINE,
   );
   const defaultFilter = filterStore;
 
